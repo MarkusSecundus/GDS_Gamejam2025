@@ -563,6 +563,8 @@ namespace MarkusSecundus.Utils.Primitives
                     yield return new Vector2Int((int)x, (int)y);
         }
 
+        public static Quaternion AsRotation2D(this float degrees) => Quaternion.Euler(0, 0, degrees);
+        public static float GetDegrees2D(this Quaternion q) => q.eulerAngles.z;
 
 
         /// <summary>
@@ -611,6 +613,13 @@ namespace MarkusSecundus.Utils.Primitives
         /// <param name="v">Vector to be extracted</param>
         /// <returns>3D Vector with x0y fields of <paramref name="v"/></returns>
         public static Vector3 x0y(this Vector2 v) => new Vector3(v.x, 0, v.y);
+
+        /// <summary>
+        /// Extract xy0 fields of 2D vector into 3D vector
+        /// </summary>
+        /// <param name="v">Vector to be extracted</param>
+        /// <returns>3D Vector with x0y fields of <paramref name="v"/></returns>
+        public static Vector3 xy0(this Vector2 v) => new Vector3(v.x, v.y, 0f);
         /// <summary>
         /// Extract 0yz fields of 2D vector into 3D vector
         /// </summary>

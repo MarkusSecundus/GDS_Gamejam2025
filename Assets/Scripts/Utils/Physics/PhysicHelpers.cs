@@ -58,6 +58,14 @@ namespace MarkusSecundus.Utils.Physics
             var toApply = velocity - self.linearVelocity;
             self.AddForce(toApply, ForceMode.VelocityChange);
         }
+
+        public static void SteerToVelocity(this Rigidbody2D self, Vector2 velocity, float maxDelta = float.MaxValue, ForceMode2D mode = ForceMode2D.Impulse)
+        {
+            var toApply = velocity - self.linearVelocity;
+            toApply = Vector2.ClampMagnitude(toApply, maxDelta);
+            self.AddForce(toApply, mode);
+        }
+
         /// <summary>
         /// Apply torque to a rigidbody exactly enough to set it to desired velocity.
         /// </summary>
