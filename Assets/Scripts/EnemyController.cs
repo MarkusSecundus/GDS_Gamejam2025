@@ -2,19 +2,24 @@ using MarkusSecundus.Utils.Behaviors.GameObjects;
 using MarkusSecundus.Utils.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static Unity.Cinemachine.IInputAxisOwner.AxisDescriptor;
 
 public class EnemyController : CharacterController
 {
 	[SerializeField] float _sufficientDistanceToPlayer = 10f;
+	[SerializeField] Interval<float> _distanceToShoot = new Interval<float>(0f, 10f);
 
 	PlayerController _player;
+
+	AreaDamager _areaDamager;
 	protected override void Start()
 	{
 		base.Start();
 
 		_player = TagSearchable.FindByTag<PlayerController>("Player");
+		_areaDamager = GetComponentInChildren<AreaDamager>();
 	}
 
 	Vector2 _getDirectionToPlayer() => (_player.transform.position - transform.position).xy();
@@ -71,9 +76,18 @@ public class EnemyController : CharacterController
 	}
 
 
-	protected override bool _isShootCommand()
+	bool _isInAttackRange()
 	{
-		return _getNearestObstruction(_getDirectionToPlayer()) > 9999f;
+		var playerDir = _getDirectionToPlayer();
+		return _getNearestObstruction(playerDir) > 9999f && _distanceToShoot.Contains(playerDir.magnitude);
+	}
+
+	protected override bool _isShootCommand() => _favouriteWeapon == WeaponType.Ranged && _isInAttackRange();
+
+	protected override bool _isSidearmCommand()
+	{
+		if (! (_favouriteWeapon == WeaponType.Mellee && _isInAttackRange())) return false;
+		return _areaDamager.TriggerInfo.GetActiveTriggers2D().Any(c => c.attachedRigidbody.gameObject == _player.gameObject);
 	}
 
 

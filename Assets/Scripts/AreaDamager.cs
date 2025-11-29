@@ -6,15 +6,15 @@ public class AreaDamager : MonoBehaviour
 	[SerializeField] CharacterController _toIgnore;
 	[SerializeField] float Damage;
 
-	TriggerActivityInfo _info;
+	public TriggerActivityInfo TriggerInfo { get; private set; }
 	private void Start()
 	{
-		_info = GetComponent<TriggerActivityInfo>();
+		TriggerInfo = GetComponent<TriggerActivityInfo>();
 	}
 
 	public void DoDamage()
 	{
-		foreach(var c in _info.GetActiveTriggers2D())
+		foreach(var c in TriggerInfo.GetActiveTriggers2D())
 		{
 			if (!c || !c.attachedRigidbody) continue;
 			if (c.attachedRigidbody.gameObject == _toIgnore.gameObject) continue;

@@ -6,6 +6,11 @@ using UnityEngine;
 using UnityEngine.Events;
 
 
+public enum WeaponType
+{
+	Ranged, Mellee
+}
+
 public abstract class CharacterController : MonoBehaviour
 {
 	[field: SerializeField] public float HP { get; private set; } = -1f;
@@ -20,6 +25,8 @@ public abstract class CharacterController : MonoBehaviour
 	[field: SerializeField] protected Rigidbody2D _projectile { get; private set; }
 	[field: SerializeField] protected float _shootForce {  get; private set; } = 1f;
 	[field: SerializeField] public float _shootCooldown_seconds { get; set; } = 0.3f;
+
+	[SerializeField] protected WeaponType _favouriteWeapon = WeaponType.Ranged;
 
 	Rigidbody2D _rigidbody;
 	protected virtual void Start()
@@ -60,15 +67,20 @@ public abstract class CharacterController : MonoBehaviour
 		if (Time.timeAsDouble < _nextAllowedShootTimestamp) return;
 		_nextAllowedShootTimestamp = Time.timeAsDouble + _shootCooldown_seconds;
 
-		_effects.GunObject.gameObject.SetActive(false);
+		Debug.Log($"Doing sidearm!", this);
+
+		if(_effects.GunObject) _effects.GunObject.gameObject.SetActive(false);
 		_effects.SidearmAnimation.gameObject.SetActive(true);
-		_effects.SidearmAnimation.SetTrigger("ShouldFire");
+		_effects.SidearmAnimation.SetTrigger("DoAttack");
 	}
 
 	public void OnSwordAnimFinished()
 	{
-		_effects.GunObject.gameObject.SetActive(true);
-		_effects.SidearmAnimation.gameObject.SetActive(false);
+		if(_favouriteWeapon != WeaponType.Mellee)
+		{
+			if (_effects.GunObject) _effects.GunObject.gameObject.SetActive(true);
+			_effects.SidearmAnimation.gameObject.SetActive(false);
+		}
 	}
 
 

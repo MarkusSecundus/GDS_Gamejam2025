@@ -256,12 +256,13 @@ MonoBehaviour:
   <_projectile>k__BackingField: {fileID: 7049666544080887053}
   <_shootForce>k__BackingField: 6
   <_shootCooldown_seconds>k__BackingField: 1
+  _favouriteWeapon: 0
   _effects:
     Sprites:
     - {fileID: 8384605070607642804}
     - {fileID: 2402634424472962504}
     HurtColor: {r: 0.45490196, g: 0, b: 0, a: 1}
-    HealColor: {r: 0, g: 1, b: 0, a: 1}
+    HealColor: {r: 0, g: 0.42745098, b: 0, a: 1}
     DeathEffectDuration: 1
     DeathColorBuildup: 0.3
     HurtBlinkBuildup: 0.1
@@ -280,6 +281,9 @@ MonoBehaviour:
     GunKnockbackEnd: 0.2
     SidearmAnimation: {fileID: 0}
   _sufficientDistanceToPlayer: 5
+  _distanceToShoot:
+    Min: 0
+    Max: 10
 --- !u!58 &273720701305167074
 CircleCollider2D:
   m_ObjectHideFlags: 0
