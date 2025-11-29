@@ -3,6 +3,7 @@ using MarkusSecundus.Utils.Extensions;
 using MarkusSecundus.Utils.Physics;
 using MarkusSecundus.Utils.Primitives;
 using UnityEngine;
+using UnityEngine.Events;
 
 
 public abstract class CharacterController : MonoBehaviour
@@ -58,6 +59,7 @@ public abstract class CharacterController : MonoBehaviour
 	{
 		if (IsDead) return;
 		HP -= damage;
+		_effects.OnHPChange.Invoke($"{HP}");
 		if (IsDead)
 			_doDie();
 		else
@@ -76,6 +78,8 @@ public abstract class CharacterController : MonoBehaviour
 		public float HurtBlinkBuildup = 0.1f;
 		public float HurtBlinkSustain = 0.1f;
 		public float HurtBlinkEnd = 0.1f;
+
+		public UnityEvent<string> OnHPChange;
 	}
 	[SerializeField] EffectDetails _effects;
 

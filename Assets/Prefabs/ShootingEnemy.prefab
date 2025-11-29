@@ -178,6 +178,10 @@ MonoBehaviour:
     HurtBlinkBuildup: 0.1
     HurtBlinkSustain: 0
     HurtBlinkEnd: 0.1
+    OnHPChange:
+      m_PersistentCalls:
+        m_Calls: []
+  _sufficientDistanceToPlayer: 5
 --- !u!58 &273720701305167074
 CircleCollider2D:
   m_ObjectHideFlags: 0
