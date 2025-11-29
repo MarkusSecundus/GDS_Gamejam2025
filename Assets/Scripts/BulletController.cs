@@ -1,4 +1,5 @@
 using DG.Tweening;
+using MarkusSecundus.Utils.Extensions;
 using MarkusSecundus.Utils.Physics;
 using MarkusSecundus.Utils.Primitives;
 using UnityEditor.U2D.Animation;
@@ -12,6 +13,7 @@ public abstract class AbstractProjectileController : MonoBehaviour
     Vector3 _startPosition;
     [SerializeField] float _maxDistanceTraveled = 10f;
     Rigidbody2D _rb;
+    [SerializeField] bool _canHitOtherBullets = true;
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -37,6 +39,7 @@ public abstract class AbstractProjectileController : MonoBehaviour
         public SpriteRenderer BulletSprite;
         public float DeathFadeDuration = 0.2f;
         public float DeathStopForce = 0.2f;
+        public ParticleSystem Particles;
 	}
     [SerializeField] EffectsConfig _effects;
 
@@ -56,6 +59,8 @@ public abstract class AbstractProjectileController : MonoBehaviour
             if (character == _toIgnore) return;
             DamageTheCharacter(character);
 		}
+        if ((!_canHitOtherBullets) && collider.attachedRigidbody?.GetComponent<BulletController>())
+            return;
 		_doDie();
 	}
 
@@ -63,8 +68,13 @@ public abstract class AbstractProjectileController : MonoBehaviour
     void _doDie()
     {
         _isDead = true;
+        if (_effects.Particles)
+            _effects.Particles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        
         if(_effects.BulletSprite)
             _effects.BulletSprite.DOColor(new Color(0, 0, 0, 0), _effects.DeathFadeDuration).OnComplete(()=>Destroy(gameObject));
+        else
+            this.InvokeWithDelay(()=>Destroy(gameObject), _effects.DeathFadeDuration);
     }
 }
 

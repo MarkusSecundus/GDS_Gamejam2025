@@ -2,7 +2,12 @@ using DG.Tweening;
 using MarkusSecundus.Utils.Extensions;
 using UnityEngine;
 
-public class HealingSpell : AbstractProjectileController
+public abstract class AbstractSpell : AbstractProjectileController
+{
+
+}
+
+public class HealingSpell : AbstractSpell
 {
 	[SerializeField] float HealAmount = 3f;
 	protected override void DamageTheCharacter(CharacterController character)
@@ -12,7 +17,7 @@ public class HealingSpell : AbstractProjectileController
 }
 
 
-public class HasteningSpell : AbstractProjectileController
+public class HasteningSpell : AbstractSpell
 {
 	[SerializeField] float Multiplier = 2f;
 	[SerializeField] float Duration_seconds = 5f;
@@ -24,7 +29,7 @@ public class HasteningSpell : AbstractProjectileController
 }
 
 
-public class RateOfFireSpell : AbstractProjectileController
+public class RateOfFireSpell : AbstractSpell
 {
 	[SerializeField] float Multiplier = 2f;
 	[SerializeField] float CosmeticMultiplier = 2f;
@@ -45,15 +50,19 @@ public class RateOfFireSpell : AbstractProjectileController
 	}
 }
 
-public class CloneSpell : AbstractProjectileController
+public class CloneSpell : AbstractSpell
 {
+	[SerializeField] float _buildupDuration_seconds = 3f;
 	protected override void DamageTheCharacter(CharacterController character)
 	{
-		character.gameObject.InstantiateWithTransform();
+		var clone = character.gameObject.InstantiateWithTransform();
+		var normalScale = clone.transform.localScale;
+		clone.transform.localScale = Vector2.zero;
+		clone.transform.DOScale(normalScale, _buildupDuration_seconds);
 	}
 }
 
-public class DrainHealthSpell : AbstractProjectileController
+public class DrainHealthSpell : AbstractSpell
 {
 	[SerializeField] CharacterController _caster;
 	protected override void DamageTheCharacter(CharacterController character)
@@ -64,7 +73,7 @@ public class DrainHealthSpell : AbstractProjectileController
 	}
 }
 
-public class ChangeSizeSpell : AbstractProjectileController
+public class ChangeSizeSpell : AbstractSpell
 {
 	[SerializeField] float Multiplier = 2f;
 	[SerializeField] float Buildup_seconds = 2f;
