@@ -14,12 +14,12 @@ public abstract class CharacterController : MonoBehaviour
 	public bool IsDead => HP <= 0f;
 
 	[field: SerializeField] protected Transform _rotatable { get; private set; }
-	[field: SerializeField] protected float _movementSpeed { get; private set; } = 1f;
+	[field: SerializeField] public float _movementSpeed { get; set; } = 1f;
 	[field: SerializeField] protected float _maxVelocityChange { get; private set; } = 1f;
 
 	[field: SerializeField] protected Rigidbody2D _projectile { get; private set; }
 	[field: SerializeField] protected float _shootForce {  get; private set; } = 1f;
-	[field: SerializeField] protected float _shootCooldown_seconds { get; private set; } = 0.3f;
+	[field: SerializeField] public float _shootCooldown_seconds { get; set; } = 0.3f;
 
 	Rigidbody2D _rigidbody;
 	protected virtual void Start()
@@ -36,13 +36,13 @@ public abstract class CharacterController : MonoBehaviour
 		_rigidbody.SteerToVelocity(targetVelocity, _maxVelocityChange);
 
 		if (_isShootCommand()) _doShoot();
+		else if (_isSidearmCommand()) _doSidearm();
 	}
 
 	private double _nextAllowedShootTimestamp = float.NegativeInfinity;
 	private void _doShoot()
 	{
 		if (Time.timeAsDouble < _nextAllowedShootTimestamp) return;
-
 		_nextAllowedShootTimestamp = Time.timeAsDouble + _shootCooldown_seconds;
 
 		var originalGunPosition = _effects.GunObject.transform.localPosition.xy();
@@ -54,7 +54,21 @@ public abstract class CharacterController : MonoBehaviour
 
 			_effects.GunObject.DOLocalMove(originalGunPosition, _effects.GunKnockbackEnd).SetDelay(_effects.GunKnockbackSustain);
 		});
+	}
+	private void _doSidearm()
+	{
+		if (Time.timeAsDouble < _nextAllowedShootTimestamp) return;
+		_nextAllowedShootTimestamp = Time.timeAsDouble + _shootCooldown_seconds;
 
+		_effects.GunObject.gameObject.SetActive(false);
+		_effects.SidearmAnimation.gameObject.SetActive(true);
+		_effects.SidearmAnimation.SetTrigger("ShouldFire");
+	}
+
+	public void OnSwordAnimFinished()
+	{
+		_effects.GunObject.gameObject.SetActive(true);
+		_effects.SidearmAnimation.gameObject.SetActive(false);
 	}
 
 
@@ -62,6 +76,7 @@ public abstract class CharacterController : MonoBehaviour
 	protected abstract Vector2 _getTargetMovement();
 
 	protected abstract bool _isShootCommand();
+	protected virtual bool _isSidearmCommand() => false;
 
 	public void DoDamage(float damage)
 	{
@@ -69,9 +84,18 @@ public abstract class CharacterController : MonoBehaviour
 		HP -= damage;
 		_effects.OnHPChange.Invoke($"{HP}");
 		if (IsDead)
-			_doDie();
+			DoDie(_effects.HurtColor);
 		else
-			_hurtAnimation();
+			_hurtAnimation(_effects.HurtColor, _effects.HurtBlinkBuildup, _effects.HurtBlinkSustain, _effects.HurtBlinkEnd);
+	}
+
+	public void DoHeal(float hp)
+	{
+		if (IsDead) return;
+		HP = Mathf.Min(HP + hp, MaxHP);
+		_effects.OnHPChange.Invoke($"{HP}");
+		_hurtAnimation(_effects.HealColor, _effects.HealBlinkBuildup, _effects.HealBlinkSustain, _effects.HealBlinkEnd);
+
 	}
 
 	[System.Serializable]
@@ -79,6 +103,7 @@ public abstract class CharacterController : MonoBehaviour
 	{
 		public SpriteRenderer[] Sprites;
 		public Color HurtColor = Color.red;
+		public Color HealColor = Color.green;
 
 		public float DeathEffectDuration = 1f;
 		public float DeathColorBuildup = 0.5f;
@@ -87,6 +112,10 @@ public abstract class CharacterController : MonoBehaviour
 		public float HurtBlinkSustain = 0.1f;
 		public float HurtBlinkEnd = 0.1f;
 
+		public float HealBlinkBuildup = 0.2f;
+		public float HealBlinkSustain = 0.2f;
+		public float HealBlinkEnd = 0.2f;
+
 		public UnityEvent<string> OnHPChange;
 
 		public Vector2 GunKnockback = new Vector2(0.3f, 0f);
@@ -94,20 +123,22 @@ public abstract class CharacterController : MonoBehaviour
 		public float GunKnockbackBuildup = 0.1f;
 		public float GunKnockbackSustain = 0.1f;
 		public float GunKnockbackEnd = 0.1f;
+
+		public Animator SidearmAnimation;
 	}
-	[SerializeField] EffectDetails _effects;
+	[SerializeField] public EffectDetails _effects;
 
 	bool _isEffectInProgress = false;
 	
 
 	
-	private void _doDie()
+	public void DoDie(Color dieColor)
 	{
 		Debug.Log($"Dies: {this}", this);
 		_isEffectInProgress = true;
 		foreach (var spr in _effects.Sprites)
 		{
-			spr.DOColor(_effects.HurtColor, _effects.DeathColorBuildup);
+			spr.DOColor(dieColor, _effects.DeathColorBuildup);
 		}
 		transform.DOScale(0f, _effects.DeathEffectDuration).OnComplete(() =>
 		{
@@ -116,16 +147,16 @@ public abstract class CharacterController : MonoBehaviour
 	}
 
 
-	private void _hurtAnimation()
+	private void _hurtAnimation(Color hurtColor, float buildup, float sustain, float end)
 	{
 		if (_isEffectInProgress) return;
 
 		foreach (var spr in _effects.Sprites)
 		{
-			spr.DOColor(_effects.HurtColor, _effects.HurtBlinkBuildup).OnComplete(() =>
+			spr.DOColor(hurtColor, buildup).OnComplete(() =>
 			{
 				if (!spr) return;
-				spr.DOColor(Color.white, _effects.HurtBlinkEnd).SetDelay(_effects.HurtBlinkSustain).OnComplete(
+				spr.DOColor(Color.white, end).SetDelay(sustain).OnComplete(
 					() => {
 						_isEffectInProgress = false;
 					}
@@ -155,4 +186,8 @@ public class PlayerController : CharacterController
 	}
 	protected override bool _isShootCommand()
 		=> Input.GetKeyDown(KeyCode.Mouse0);
+
+
+	protected override bool _isSidearmCommand()
+		=> Input.GetKeyDown(KeyCode.Mouse1);
 }

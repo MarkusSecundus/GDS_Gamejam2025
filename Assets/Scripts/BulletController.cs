@@ -4,15 +4,14 @@ using MarkusSecundus.Utils.Primitives;
 using UnityEditor.U2D.Animation;
 using UnityEngine;
 
-public class BulletController : MonoBehaviour
+public abstract class AbstractProjectileController : MonoBehaviour
 {
-    [field: SerializeField] float Damage { get; set; } = 1f;
 
     [SerializeField] CharacterController _toIgnore;
 
     Vector3 _startPosition;
     [SerializeField] float _maxDistanceTraveled = 10f;
-    [SerializeField] Rigidbody2D _rb;
+    Rigidbody2D _rb;
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -44,6 +43,9 @@ public class BulletController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision) => _onHit2D(collision.collider);
 	private void OnTriggerEnter2D(Collider2D collision)=> _onHit2D(collision);
 
+
+    protected abstract void DamageTheCharacter(CharacterController character);
+
     void _onHit2D(Collider2D collider)
 	{
 		if (_isDead) return;
@@ -52,7 +54,7 @@ public class BulletController : MonoBehaviour
 		if (character)
 		{
             if (character == _toIgnore) return;
-			character.DoDamage(Damage);
+            DamageTheCharacter(character);
 		}
 		_doDie();
 	}
@@ -64,4 +66,14 @@ public class BulletController : MonoBehaviour
         if(_effects.BulletSprite)
             _effects.BulletSprite.DOColor(new Color(0, 0, 0, 0), _effects.DeathFadeDuration).OnComplete(()=>Destroy(gameObject));
     }
+}
+
+public class BulletController : AbstractProjectileController
+{
+	[field: SerializeField] float Damage { get; set; } = 1f;
+
+	protected override void DamageTheCharacter(CharacterController character)
+	{
+		character.DoDamage(Damage);
+	}
 }
