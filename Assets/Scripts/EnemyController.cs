@@ -21,14 +21,14 @@ public class EnemyController : CharacterController
 
 	protected override float _getLookRotation()
 	{
-		var direction = _getDirectionToPlayer().normalized;
+		var direction = lastDir == Vector2.zero ? _getDirectionToPlayer().normalized : lastDir;
 		return Mathf.Rad2Deg * Mathf.Atan2(direction.y, direction.x);
 	}
 
 	protected override Vector2 _getTargetMovement()
 	{
 		var dir = _getDirectionToPlayer().normalized;
-		if (! _isDirectionObstructed(dir, 10f))
+		if (_getNearestObstruction(dir, 10f) >= 2f)
 		{
 			if (_player.transform.position.Distance(transform.position) <= _sufficientDistanceToPlayer)
 			{
@@ -45,7 +45,7 @@ public class EnemyController : CharacterController
 	float lastDist = 20f;
 	Vector2 _chooseLeastTerribleMovementDirection(Vector2 dirToPlayer)
 	{
-		if(!_isDirectionObstructed(lastDir, lastDist))
+		if(_getNearestObstruction(lastDir, lastDist) >= 3f)
 		{
 			return lastDir;
 		}
@@ -58,7 +58,7 @@ public class EnemyController : CharacterController
 		{
 			foreach (var dir in dirs)
 			{
-				if(!_isDirectionObstructed(dir, dist))
+				if(_getNearestObstruction(dir, dist) >= (dist*0.5f))
 				{
 					lastDir = dir;
 					lastDist = dist;
@@ -73,21 +73,28 @@ public class EnemyController : CharacterController
 
 	protected override bool _isShootCommand()
 	{
-		return !_isDirectionObstructed(_getDirectionToPlayer());
+		return _getNearestObstruction(_getDirectionToPlayer()) > 9999f;
 	}
 
 
 	List<RaycastHit2D> _raycastTemp = new();
-	bool _isDirectionObstructed(Vector2 dir, float distance = float.PositiveInfinity)
+	float _getNearestObstruction(Vector2 dir, float distance = float.PositiveInfinity)
 	{
 		_raycastTemp.Clear();
 		Physics2D.Raycast(transform.position, dir, CreateLegacyFilter(-5, float.NegativeInfinity, float.PositiveInfinity), _raycastTemp, distance);
+		var ret = float.PositiveInfinity;
 		foreach (var hit in _raycastTemp)
 		{
-			if (hit.collider.attachedRigidbody.gameObject != _player.gameObject)
-				return false;
+			if (hit.collider.attachedRigidbody && (
+				hit.collider.attachedRigidbody.gameObject == this.gameObject 
+				|| hit.collider.attachedRigidbody.gameObject == _player.gameObject
+				|| hit.collider.GetComponent<BulletController>()
+			))
+				continue;
+			ret = Mathf.Min(ret, hit.distance);
 		}
-		return true;
+		if (ret >= _getDirectionToPlayer().magnitude) ret = float.PositiveInfinity;
+		return ret;
 
 	}
 

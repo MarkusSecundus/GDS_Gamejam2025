@@ -117,8 +117,8 @@ MonoBehaviour:
   _rb: {fileID: 0}
   _effects:
     BulletSprite: {fileID: 3991523896757160813}
-    DeathFadeDuration: 0.2
-    DeathStopForce: 0.2
+    DeathFadeDuration: 0.5
+    DeathStopForce: 1
 --- !u!1 &7822194668047474831
 GameObject:
   m_ObjectHideFlags: 0

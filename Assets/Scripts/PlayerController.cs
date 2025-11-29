@@ -45,10 +45,18 @@ public abstract class CharacterController : MonoBehaviour
 
 		_nextAllowedShootTimestamp = Time.timeAsDouble + _shootCooldown_seconds;
 
-		var newProjectile = _projectile.gameObject.InstantiateWithTransform(true, true, true, false).GetComponent<Rigidbody2D>();
-		var shootDirection = (newProjectile.position - transform.position.xy()).normalized;
-		newProjectile.AddForce(shootDirection * _shootForce, ForceMode2D.Impulse);
+		var originalGunPosition = _effects.GunObject.transform.localPosition.xy();
+		_effects.GunObject.DOLocalMove(originalGunPosition + _effects.GunKnockback, _effects.GunKnockbackBuildup).OnComplete(() =>
+		{
+			var newProjectile = _projectile.gameObject.InstantiateWithTransform(true, true, true, false).GetComponent<Rigidbody2D>();
+			var shootDirection = (newProjectile.position - transform.position.xy()).normalized;
+			newProjectile.AddForce(shootDirection * _shootForce, ForceMode2D.Impulse);
+
+			_effects.GunObject.DOLocalMove(originalGunPosition, _effects.GunKnockbackEnd).SetDelay(_effects.GunKnockbackSustain);
+		});
+
 	}
+
 
 	protected abstract float _getLookRotation();
 	protected abstract Vector2 _getTargetMovement();
@@ -80,10 +88,19 @@ public abstract class CharacterController : MonoBehaviour
 		public float HurtBlinkEnd = 0.1f;
 
 		public UnityEvent<string> OnHPChange;
+
+		public Vector2 GunKnockback = new Vector2(0.3f, 0f);
+		public Transform GunObject;
+		public float GunKnockbackBuildup = 0.1f;
+		public float GunKnockbackSustain = 0.1f;
+		public float GunKnockbackEnd = 0.1f;
 	}
 	[SerializeField] EffectDetails _effects;
 
 	bool _isEffectInProgress = false;
+	
+
+	
 	private void _doDie()
 	{
 		Debug.Log($"Dies: {this}", this);

@@ -48,13 +48,13 @@ public class BulletController : MonoBehaviour
 	{
 		if (_isDead) return;
 
-		var character = collider.GetComponent<CharacterController>();
-		if (character && (character != _toIgnore))
+		var character = collider.attachedRigidbody?.GetComponent<CharacterController>();
+		if (character)
 		{
-            //Debug.Log($"Did hit: {character}", this);
+            if (character == _toIgnore) return;
 			character.DoDamage(Damage);
-			_doDie();
 		}
+		_doDie();
 	}
 
 	bool _isDead = false;
