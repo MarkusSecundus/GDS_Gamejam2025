@@ -21,10 +21,19 @@ namespace MarkusSecundus.Utils.Behaviors.Physics
         /// Action to be invoked when <c>OnTriggerEnter</c> message is received
         /// </summary>
         public UnityEvent<Collider> OnEnter = new UnityEvent<Collider>();
+
+        /// <summary>
+        /// Action to be invoked when <c>OnTriggerEnter2D</c> message is received
+        /// </summary>
+        public UnityEvent<Collider2D> OnEnter2D = new UnityEvent<Collider2D>();
         /// <summary>
         /// Action to be invoked when <c>OnTriggerExit</c> message is received
         /// </summary>
         public UnityEvent<Collider> OnExit = new UnityEvent<Collider>();
+        /// <summary>
+        /// Action to be invoked when <c>OnTriggerExit2D</c> message is received
+        /// </summary>
+        public UnityEvent<Collider2D> OnExit2D = new UnityEvent<Collider2D>();
 
         private IEnumerable<Collider> colliders;
         /// <summary>
@@ -80,5 +89,15 @@ namespace MarkusSecundus.Utils.Behaviors.Physics
         {
             if(ListenToCollisionEvents) OnExit?.Invoke(collision.collider);
         }
-    }
+
+		private void OnTriggerEnter2D(Collider2D collision)
+		{
+            if (ListenToTriggerEvents && collision.tag == "Player") OnEnter2D?.Invoke(collision);
+		}
+
+		private void OnTriggerExit2D(Collider2D collision)
+		{
+			if (ListenToTriggerEvents) OnExit2D?.Invoke(collision);
+		}
+	}
 }
