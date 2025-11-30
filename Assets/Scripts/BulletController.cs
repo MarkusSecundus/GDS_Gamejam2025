@@ -14,6 +14,9 @@ public abstract class AbstractProjectileController : MonoBehaviour
     Rigidbody2D _rb;
     [SerializeField] protected bool _canHitOtherBullets = true;
     [SerializeField] protected bool _isPassthrough = false;
+
+    [field: SerializeField] public AudioClip CastSound { get; private set; }
+
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();

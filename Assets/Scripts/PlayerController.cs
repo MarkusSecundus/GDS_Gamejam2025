@@ -33,11 +33,24 @@ public abstract class CharacterController : MonoBehaviour
 
 	[SerializeField] TopBarController _spellNameDisplay;
 
+	protected AudioSource _audioPlayer;
+
+	[System.Serializable]
+	public class SoundEffects
+	{
+		public AudioClip HurtSound;
+		public AudioClip HealSound;
+		public AudioClip DieSound;
+		public AudioClip SidearmSound;
+	}
+	[SerializeField] SoundEffects _sounds;
+
 	Rigidbody2D _rigidbody;
 	protected virtual void Start()
 	{
 		if (HP < 0f) HP = MaxHP;
 		_rigidbody = GetComponent<Rigidbody2D>();
+		_audioPlayer = GetComponent<AudioSource>();
 	}
 
 	protected virtual void Update()
@@ -63,10 +76,12 @@ public abstract class CharacterController : MonoBehaviour
 			var newProjectile = _getProjectile().gameObject.InstantiateWithTransform(true, true, true, false).GetComponent<Rigidbody2D>();
 			var shootDirection = (newProjectile.position - transform.position.xy()).normalized;
 			newProjectile.AddForce(shootDirection * _shootForce, ForceMode2D.Impulse);
-			if(_spellNameDisplay && newProjectile.GetComponent<AbstractSpell>() is AbstractSpell spell)
+			var projectile = newProjectile.GetComponent<AbstractProjectileController>();
+			if (_spellNameDisplay && projectile is AbstractSpell spell)
 			{
 				_spellNameDisplay.ShowText(spell.SpellName);
 			}
+			if (projectile.CastSound) _audioPlayer.PlayOneShot(projectile.CastSound);
 
 			_effects.GunObject.DOLocalMove(originalGunPosition, _effects.GunKnockbackEnd).SetDelay(_effects.GunKnockbackSustain);
 		});
@@ -87,6 +102,7 @@ public abstract class CharacterController : MonoBehaviour
 		if(_effects.GunObject) _effects.GunObject.gameObject.SetActive(false);
 		_effects.SidearmAnimation.gameObject.SetActive(true);
 		_effects.SidearmAnimation.SetTrigger("DoAttack");
+		_audioPlayer.PlayOneShot(_sounds.SidearmSound);
 	}
 
 	public void OnSwordAnimFinished()
@@ -113,7 +129,7 @@ public abstract class CharacterController : MonoBehaviour
 		if (IsDead)
 			DoDie(_effects.HurtColor);
 		else
-			_hurtAnimation(_effects.HurtColor, _effects.HurtBlinkBuildup, _effects.HurtBlinkSustain, _effects.HurtBlinkEnd);
+			_hurtAnimation(_effects.HurtColor, _effects.HurtBlinkBuildup, _effects.HurtBlinkSustain, _effects.HurtBlinkEnd, _sounds.HurtSound);
 	}
 
 	public void DoHeal(float hp)
@@ -121,7 +137,7 @@ public abstract class CharacterController : MonoBehaviour
 		if (IsDead) return;
 		HP = Mathf.Min(HP + hp, MaxHP);
 		_effects.OnHPChange.Invoke($"{HP}");
-		_hurtAnimation(_effects.HealColor, _effects.HealBlinkBuildup, _effects.HealBlinkSustain, _effects.HealBlinkEnd);
+		_hurtAnimation(_effects.HealColor, _effects.HealBlinkBuildup, _effects.HealBlinkSustain, _effects.HealBlinkEnd, _sounds.HealSound);
 
 	}
 
@@ -162,6 +178,8 @@ public abstract class CharacterController : MonoBehaviour
 	public void DoDie(Color dieColor)
 	{
 		Debug.Log($"Dies: {this}", this);
+		_audioPlayer.PlayOneShot(_sounds.DieSound);
+
 		_isEffectInProgress = true;
 		foreach (var spr in _effects.Sprites)
 		{
@@ -175,8 +193,9 @@ public abstract class CharacterController : MonoBehaviour
 	}
 
 
-	private void _hurtAnimation(Color hurtColor, float buildup, float sustain, float end)
+	private void _hurtAnimation(Color hurtColor, float buildup, float sustain, float end, AudioClip sound)
 	{
+		if(sound) _audioPlayer.PlayOneShot(sound);
 		if (_isEffectInProgress) return;
 
 		foreach (var spr in _effects.Sprites)
