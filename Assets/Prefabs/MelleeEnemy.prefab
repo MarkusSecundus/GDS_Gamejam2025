@@ -454,7 +454,7 @@ MonoBehaviour:
     HurtSound: {fileID: 8300000, guid: c4489a250193c474f8954779ecf1c5a7, type: 3}
     HealSound: {fileID: 0}
     DieSound: {fileID: 0}
-    SidearmSound: {fileID: 8300000, guid: c798a43107f4fc24f81f382f26ae2c34, type: 3}
+    SidearmSound: {fileID: 8300000, guid: e90bc572830549947ab174a11fd628d5, type: 3}
   _effects:
     Sprites:
     - {fileID: 6022991370816052902}
