@@ -97,7 +97,7 @@ public class EnemyController : CharacterController
 	protected override bool _isSidearmCommand()
 	{
 		if (! (_favouriteWeapon == WeaponType.Mellee && _isInAttackRange())) return false;
-		return _areaDamager.TriggerInfo.GetActiveTriggers2D().Any(c => c.attachedRigidbody.gameObject == _player.gameObject);
+		return _areaDamager.TriggerInfo.GetActiveTriggers2D().Any(c => c.attachedRigidbody && c.attachedRigidbody.gameObject == _player.gameObject);
 	}
 
 

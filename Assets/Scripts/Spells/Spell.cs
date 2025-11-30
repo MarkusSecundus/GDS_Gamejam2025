@@ -10,6 +10,7 @@ public enum SpellType
 
 public abstract class AbstractSpell : AbstractProjectileController
 {
+	[field: SerializeField] public string SpellName { get; private set; }
 	[field: SerializeField] public SpellType Type { get; private set; }
 	[field: SerializeField] ParticleSystem _victimParticles;
 	public AbstractSpell()

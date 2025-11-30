@@ -28,6 +28,8 @@ public abstract class CharacterController : MonoBehaviour
 
 	[SerializeField] protected WeaponType _favouriteWeapon = WeaponType.Ranged;
 
+	[SerializeField] UnityEvent OnDie;
+
 	Rigidbody2D _rigidbody;
 	protected virtual void Start()
 	{
@@ -153,6 +155,7 @@ public abstract class CharacterController : MonoBehaviour
 		{
 			spr.DOColor(dieColor, _effects.DeathColorBuildup);
 		}
+		OnDie?.Invoke();
 		transform.DOScale(0f, _effects.DeathEffectDuration).OnComplete(() =>
 		{
 			Destroy(gameObject);
