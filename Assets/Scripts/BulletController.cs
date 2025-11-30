@@ -2,7 +2,6 @@ using DG.Tweening;
 using MarkusSecundus.Utils.Extensions;
 using MarkusSecundus.Utils.Physics;
 using MarkusSecundus.Utils.Primitives;
-using UnityEditor.U2D.Animation;
 using UnityEngine;
 
 public abstract class AbstractProjectileController : MonoBehaviour

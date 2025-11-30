@@ -11,8 +11,7 @@ public class HasteningSpell : AbstractSpell
 	[SerializeField] float CosmeticMultiplier = 2f;
 	protected override void DamageTheCharacter(CharacterController character)
 	{
-		character.InvokeWithDelay(() => {  }, Duration_seconds);
-
+		this.ApplyParticles(character);
 
 		if(MovementMultiplier != 1f)
 			character._movementSpeed *= MovementMultiplier;
@@ -34,6 +33,7 @@ public class HasteningSpell : AbstractSpell
 				character._effects.GunKnockbackSustain /= CosmeticMultiplier;
 				character._effects.GunKnockbackEnd /= CosmeticMultiplier;
 			}
+			RemoveParticles(character);
 		}, Duration_seconds);
 	}
 }

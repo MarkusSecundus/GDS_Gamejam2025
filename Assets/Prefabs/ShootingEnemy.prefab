@@ -248,8 +248,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3435cbb656a02342878f07060e35004, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <HP>k__BackingField: -1
-  <MaxHP>k__BackingField: 2
+  <HP>k__BackingField: 2
+  <MaxHP>k__BackingField: 3
   <_rotatable>k__BackingField: {fileID: 2324893207956793064}
   <_movementSpeed>k__BackingField: 2
   <_maxVelocityChange>k__BackingField: 0.3
@@ -284,6 +284,9 @@ MonoBehaviour:
   _distanceToShoot:
     Min: 0
     Max: 10
+  _survivableScale:
+    Min: 0.25
+    Max: 7.5
 --- !u!58 &273720701305167074
 CircleCollider2D:
   m_ObjectHideFlags: 0
