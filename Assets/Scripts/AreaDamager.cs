@@ -20,7 +20,7 @@ public class AreaDamager : MonoBehaviour
 			if (c.attachedRigidbody.gameObject == _toIgnore.gameObject) continue;
 			CharacterController ctrl = c.attachedRigidbody.GetComponent<CharacterController>();
 			if (!ctrl) continue;
-			ctrl.DoDamage(Damage);
+			ctrl.DoDamage(Damage, this);
 		}
 	}
 }

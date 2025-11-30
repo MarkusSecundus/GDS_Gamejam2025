@@ -8,7 +8,7 @@ public class DrainHealthSpell : AbstractSpell
 	protected override void DamageTheCharacter(CharacterController character)
 	{
 		var drainedHP = character.HP;
-		character.DoDamage(drainedHP);
+		character.DoDamage(drainedHP, this);
 		_caster.DoHeal(drainedHP);
 	}
 }

@@ -3,8 +3,8 @@ using MarkusSecundus.Utils.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
-using static Unity.Cinemachine.IInputAxisOwner.AxisDescriptor;
 
 public class EnemyController : CharacterController
 {
@@ -12,6 +12,10 @@ public class EnemyController : CharacterController
 	[SerializeField] Interval<float> _distanceToShoot = new Interval<float>(0f, 10f);
 	[SerializeField] public Interval<float> _survivableScale = new Interval<float>(0.25f, 7.5f);
 	[NonSerialized] public bool _isStillGrowing = false;
+
+	[SerializeField] float _radiusToNoticePlayer = 20f;
+
+	bool _didNoticeThePlayer = false;
 
 	PlayerController _player;
 
@@ -28,6 +32,9 @@ public class EnemyController : CharacterController
 	{
 		base.Update();
 
+		if (!_didNoticeThePlayer && _getDirectionToPlayer().sqrMagnitude < _radiusToNoticePlayer.Sqr())
+			_didNoticeThePlayer = true;
+
 		if (!_isStillGrowing && !_survivableScale.Contains(transform.localScale.MaxField()))
 			DoDie(_effects.HurtColor);
 	}
@@ -42,6 +49,8 @@ public class EnemyController : CharacterController
 
 	protected override Vector2 _getTargetMovement()
 	{
+		if(!_didNoticeThePlayer) return Vector2.zero;
+
 		var dir = _getDirectionToPlayer().normalized;
 		if (_getNearestObstruction(dir, 10f) >= 2f)
 		{
@@ -85,6 +94,13 @@ public class EnemyController : CharacterController
 		return Vector2.zero;
 	}
 
+
+	public override void DoDamage(float damage, UnityEngine.Object tag)
+	{
+		base.DoDamage(damage, tag);
+		if(tag is AbstractSpell || tag.GetComponentInParent<PlayerController>())
+			_didNoticeThePlayer = true;
+	}
 
 	bool _isInAttackRange()
 	{

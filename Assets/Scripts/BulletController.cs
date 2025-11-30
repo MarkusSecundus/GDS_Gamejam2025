@@ -88,6 +88,6 @@ public class BulletController : AbstractProjectileController
 
 	protected override void DamageTheCharacter(CharacterController character)
 	{
-		character.DoDamage(Damage);
+		character.DoDamage(Damage, this);
 	}
 }

@@ -121,7 +121,7 @@ public abstract class CharacterController : MonoBehaviour
 	protected abstract bool _isShootCommand();
 	protected virtual bool _isSidearmCommand() => false;
 
-	public void DoDamage(float damage)
+	public virtual void DoDamage(float damage, Object tag)
 	{
 		if (IsDead) return;
 		HP -= damage;
