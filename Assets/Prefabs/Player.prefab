@@ -9799,7 +9799,7 @@ MonoBehaviour:
   _maxDistanceTraveled: 30
   _canHitOtherBullets: 0
   _isPassthrough: 0
-  <CastSound>k__BackingField: {fileID: 0}
+  <CastSound>k__BackingField: {fileID: 8300000, guid: 29b671cba4b62184f831f02fbeff60e9, type: 3}
   _effects:
     BulletSprite: {fileID: 0}
     DeathFadeDuration: 5
@@ -19739,6 +19739,7 @@ MonoBehaviour:
   <Type>k__BackingField: 2
   _victimParticles: {fileID: 0}
   _buildupDuration_seconds: 3
+  _placementOffset: {x: 0.3, y: 0.3}
 --- !u!1 &2936451296259051438
 GameObject:
   m_ObjectHideFlags: 0
@@ -29793,7 +29794,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <HP>k__BackingField: -1
-  <MaxHP>k__BackingField: 500
+  <MaxHP>k__BackingField: 10
   <_rotatable>k__BackingField: {fileID: 9194531817421884384}
   <_movementSpeed>k__BackingField: 4
   <_maxVelocityChange>k__BackingField: 1
@@ -29803,7 +29804,20 @@ MonoBehaviour:
   _favouriteWeapon: 0
   OnDie:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: MarkusSecundus.Utils.Behaviors.Cosmetics.FadeEffect,
+          UtilAssembly
+        m_MethodName: FadeIn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _spellNameDisplay: {fileID: 0}
   _sounds:
     HurtSound: {fileID: 8300000, guid: 366dda1c4268b174ebb6d3c1c7bb4399, type: 3}
@@ -34913,7 +34927,7 @@ MonoBehaviour:
   _maxDistanceTraveled: 30
   _canHitOtherBullets: 0
   _isPassthrough: 0
-  <CastSound>k__BackingField: {fileID: 0}
+  <CastSound>k__BackingField: {fileID: 8300000, guid: 59d998d9d6638934781fac0c8770e457, type: 3}
   _effects:
     BulletSprite: {fileID: 0}
     DeathFadeDuration: 5
@@ -40380,7 +40394,7 @@ MonoBehaviour:
   _maxDistanceTraveled: 30
   _canHitOtherBullets: 0
   _isPassthrough: 0
-  <CastSound>k__BackingField: {fileID: 0}
+  <CastSound>k__BackingField: {fileID: 8300000, guid: c24570077c286ec42a2cfce7661a37f0, type: 3}
   _effects:
     BulletSprite: {fileID: 0}
     DeathFadeDuration: 5
@@ -50313,7 +50327,7 @@ MonoBehaviour:
   _maxDistanceTraveled: 30
   _canHitOtherBullets: 0
   _isPassthrough: 1
-  <CastSound>k__BackingField: {fileID: 0}
+  <CastSound>k__BackingField: {fileID: 8300000, guid: 3a011d8199fc66d47a7c437e7baf6a03, type: 3}
   _effects:
     BulletSprite: {fileID: 0}
     DeathFadeDuration: 5
