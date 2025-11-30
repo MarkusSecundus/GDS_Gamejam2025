@@ -11,9 +11,9 @@ public abstract class AbstractProjectileController : MonoBehaviour
     [SerializeField] CharacterController _toIgnore;
 
     Vector3 _startPosition;
-    [SerializeField] float _maxDistanceTraveled = 10f;
+    [SerializeField] float _maxDistanceTraveled = 30f;
     Rigidbody2D _rb;
-    [SerializeField] bool _canHitOtherBullets = true;
+    [SerializeField] protected bool _canHitOtherBullets = true;
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();

@@ -57,6 +57,7 @@ public abstract class CharacterController : MonoBehaviour
 		{
 			var newProjectile = _projectile.gameObject.InstantiateWithTransform(true, true, true, false).GetComponent<Rigidbody2D>();
 			var shootDirection = (newProjectile.position - transform.position.xy()).normalized;
+			Debug.Log($"Shoot dir: {shootDirection}", this);
 			newProjectile.AddForce(shootDirection * _shootForce, ForceMode2D.Impulse);
 
 			_effects.GunObject.DOLocalMove(originalGunPosition, _effects.GunKnockbackEnd).SetDelay(_effects.GunKnockbackSustain);
@@ -67,7 +68,7 @@ public abstract class CharacterController : MonoBehaviour
 		if (Time.timeAsDouble < _nextAllowedShootTimestamp) return;
 		_nextAllowedShootTimestamp = Time.timeAsDouble + _shootCooldown_seconds;
 
-		Debug.Log($"Doing sidearm!", this);
+		//Debug.Log($"Doing sidearm!", this);
 
 		if(_effects.GunObject) _effects.GunObject.gameObject.SetActive(false);
 		_effects.SidearmAnimation.gameObject.SetActive(true);
@@ -182,6 +183,7 @@ public abstract class CharacterController : MonoBehaviour
 
 public class PlayerController : CharacterController
 {
+	[SerializeField] Transform _spellRoot;
 
     protected override float _getLookRotation()
     {

@@ -10,6 +10,7 @@ public class EnemyController : CharacterController
 {
 	[SerializeField] float _sufficientDistanceToPlayer = 10f;
 	[SerializeField] Interval<float> _distanceToShoot = new Interval<float>(0f, 10f);
+	[SerializeField] Interval<float> _survivableScale = new Interval<float>(0.25f, 7.5f);
 
 	PlayerController _player;
 
@@ -20,6 +21,14 @@ public class EnemyController : CharacterController
 
 		_player = TagSearchable.FindByTag<PlayerController>("Player");
 		_areaDamager = GetComponentInChildren<AreaDamager>();
+	}
+
+	protected override void Update()
+	{
+		base.Update();
+
+		if (!_survivableScale.Contains(transform.localScale.MaxField()))
+			DoDie(_effects.HurtColor);
 	}
 
 	Vector2 _getDirectionToPlayer() => (_player.transform.position - transform.position).xy();
