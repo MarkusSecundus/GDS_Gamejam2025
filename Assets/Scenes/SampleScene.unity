@@ -5526,6 +5526,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 116730887}
     - target: {fileID: 2444987771480756822, guid: 42d4a639413261441a32131fef322c1c, type: 3}
+      propertyPath: <HP>k__BackingField
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2444987771480756822, guid: 42d4a639413261441a32131fef322c1c, type: 3}
+      propertyPath: <MaxHP>k__BackingField
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2444987771480756822, guid: 42d4a639413261441a32131fef322c1c, type: 3}
       propertyPath: OnDie.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1980103129}

@@ -250,13 +250,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <HP>k__BackingField: 2
-  <MaxHP>k__BackingField: 3
+  <MaxHP>k__BackingField: 4
   <_rotatable>k__BackingField: {fileID: 2324893207956793064}
   <_movementSpeed>k__BackingField: 2
   <_maxVelocityChange>k__BackingField: 0.3
   <_projectile>k__BackingField: {fileID: 7049666544080887053}
   <_shootForce>k__BackingField: 6
-  <_shootCooldown_seconds>k__BackingField: 1
+  <_shootCooldown_seconds>k__BackingField: 3
   _favouriteWeapon: 0
   OnDie:
     m_PersistentCalls:
