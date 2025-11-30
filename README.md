@@ -23,3 +23,4 @@ Used sounds:
  - electro_spell: https://freesound.org/people/newlocknew/sounds/702908/
  - size_up_spell, size_down_spell: MuseScore MuseSounds - contrabass
  - hasten_spell, life_drain: MuseScore MuseSounds - flute
+ - soundtrack: https://github.com/TomasTatra/GameJam2024/blob/main/Assets/Music/snowTrack.mp3
