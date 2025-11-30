@@ -10,7 +10,8 @@ public class EnemyController : CharacterController
 {
 	[SerializeField] float _sufficientDistanceToPlayer = 10f;
 	[SerializeField] Interval<float> _distanceToShoot = new Interval<float>(0f, 10f);
-	[SerializeField] Interval<float> _survivableScale = new Interval<float>(0.25f, 7.5f);
+	[SerializeField] public Interval<float> _survivableScale = new Interval<float>(0.25f, 7.5f);
+	[NonSerialized] public bool _isStillGrowing = false;
 
 	PlayerController _player;
 
@@ -27,7 +28,7 @@ public class EnemyController : CharacterController
 	{
 		base.Update();
 
-		if (!_survivableScale.Contains(transform.localScale.MaxField()))
+		if (!_isStillGrowing && !_survivableScale.Contains(transform.localScale.MaxField()))
 			DoDie(_effects.HurtColor);
 	}
 
