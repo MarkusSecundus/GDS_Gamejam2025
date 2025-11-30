@@ -14,6 +14,7 @@ public abstract class AbstractProjectileController : MonoBehaviour
     [SerializeField] float _maxDistanceTraveled = 30f;
     Rigidbody2D _rb;
     [SerializeField] protected bool _canHitOtherBullets = true;
+    [SerializeField] protected bool _isPassthrough = false;
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -61,7 +62,8 @@ public abstract class AbstractProjectileController : MonoBehaviour
 		}
         if ((!_canHitOtherBullets) && collider.attachedRigidbody?.GetComponent<BulletController>())
             return;
-		_doDie();
+        if(! _isPassthrough)
+		    _doDie();
 	}
 
 	bool _isDead = false;
