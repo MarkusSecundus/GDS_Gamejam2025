@@ -35,10 +35,11 @@ public abstract class AbstractSpell : AbstractProjectileController
 	{
 		if (!_victimParticles) return;
 
-		if (_particlesPerVictim?.TryGetValue(victim, out var particles) == true)
+		if (_particlesPerVictim?.TryGetValue(victim, out var particles) == true && particles)
 		{
+			var objectToDestroy = particles.gameObject;
 			particles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-			victim.InvokeWithDelay(() => Destroy(particles.gameObject), 5f);
+			victim.InvokeWithDelay(() => Destroy(objectToDestroy), 5f);
 		}
 	}
 }

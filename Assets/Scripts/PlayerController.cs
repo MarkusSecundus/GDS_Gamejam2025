@@ -2,6 +2,7 @@ using DG.Tweening;
 using MarkusSecundus.Utils.Extensions;
 using MarkusSecundus.Utils.Physics;
 using MarkusSecundus.Utils.Primitives;
+using MarkusSecundus.Utils.Randomness;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -30,6 +31,8 @@ public abstract class CharacterController : MonoBehaviour
 
 	[SerializeField] UnityEvent OnDie;
 
+	[SerializeField] TopBarController _spellNameDisplay;
+
 	Rigidbody2D _rigidbody;
 	protected virtual void Start()
 	{
@@ -57,14 +60,23 @@ public abstract class CharacterController : MonoBehaviour
 		var originalGunPosition = _effects.GunObject.transform.localPosition.xy();
 		_effects.GunObject.DOLocalMove(originalGunPosition + _effects.GunKnockback, _effects.GunKnockbackBuildup).OnComplete(() =>
 		{
-			var newProjectile = _projectile.gameObject.InstantiateWithTransform(true, true, true, false).GetComponent<Rigidbody2D>();
+			var newProjectile = _getProjectile().gameObject.InstantiateWithTransform(true, true, true, false).GetComponent<Rigidbody2D>();
 			var shootDirection = (newProjectile.position - transform.position.xy()).normalized;
-			Debug.Log($"Shoot dir: {shootDirection}", this);
 			newProjectile.AddForce(shootDirection * _shootForce, ForceMode2D.Impulse);
+			if(_spellNameDisplay && newProjectile.GetComponent<AbstractSpell>() is AbstractSpell spell)
+			{
+				_spellNameDisplay.ShowText(spell.SpellName);
+			}
 
 			_effects.GunObject.DOLocalMove(originalGunPosition, _effects.GunKnockbackEnd).SetDelay(_effects.GunKnockbackSustain);
 		});
 	}
+
+	protected virtual Rigidbody2D _getProjectile()
+	{
+		return _projectile;
+	}
+
 	private void _doSidearm()
 	{
 		if (Time.timeAsDouble < _nextAllowedShootTimestamp) return;
@@ -187,6 +199,24 @@ public abstract class CharacterController : MonoBehaviour
 public class PlayerController : CharacterController
 {
 	[SerializeField] Transform _spellRoot;
+
+	AbstractSpell[] _allSpells;
+	int _currentSpellIdx = 0;
+	protected override void Start()
+	{
+		base.Start();
+		_allSpells = _spellRoot.GetComponentsInChildren<AbstractSpell>(true);
+		RandomHelpers.Rand.Shuffle<AbstractSpell>(_allSpells);
+	}
+
+
+	protected override Rigidbody2D _getProjectile()
+	{
+		var ret = _allSpells[_currentSpellIdx];
+		++_currentSpellIdx;
+		if (_currentSpellIdx >= _allSpells.Length) _currentSpellIdx = 0;
+		return ret.GetComponent<Rigidbody2D>();
+	}
 
     protected override float _getLookRotation()
     {

@@ -197,6 +197,8 @@ GameObject:
   - component: {fileID: 116730884}
   - component: {fileID: 116730886}
   - component: {fileID: 116730885}
+  - component: {fileID: 116730888}
+  - component: {fileID: 116730887}
   m_Layer: 5
   m_Name: TopBar
   m_TagString: Untagged
@@ -216,13 +218,13 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2018216983}
+  - {fileID: 1976616636}
   m_Father: {fileID: 1731413244}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00024414062, y: 451.6553}
-  m_SizeDelta: {x: -0.0005, y: -903.3107}
+  m_AnchoredPosition: {x: 0.00024414062, y: 499.84}
+  m_SizeDelta: {x: -0.0005, y: -999.67}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &116730885
 MonoBehaviour:
@@ -262,6 +264,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 116730883}
   m_CullTransparentMesh: 1
+--- !u!114 &116730887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 116730883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67da292410823c9469ff62785d818fdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _text: {fileID: 1976616638}
+  _image: {fileID: 116730885}
+  _showBuildup_seconds: 0.5
+  _showSustain_seconds: 2
+  _showFade_seconds: 0.5
+--- !u!114 &116730888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 116730883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad08fc1c794f23f49a90127cea1c1aed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Description: Spell of <color=#aaaa00FF><b>Speedify</b></color>
+  ToRun:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 116730887}
+        m_TargetAssemblyTypeName: TopBarController, Assembly-CSharp
+        m_MethodName: ShowText
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Spell of <color=#aaaa00FF><b>Speedify</b></color>
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &187514570
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3347,7 +3394,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 548c23cfb4ad4d34caa67203715137df, type: 3}
---- !u!1 &2018216982
+--- !u!1 &1976616635
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3355,10 +3402,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2018216983}
-  - component: {fileID: 2018216986}
-  - component: {fileID: 2018216985}
-  - component: {fileID: 2018216984}
+  - component: {fileID: 1976616636}
+  - component: {fileID: 1976616639}
+  - component: {fileID: 1976616638}
+  - component: {fileID: 1976616637}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -3366,13 +3413,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &2018216983
+--- !u!224 &1976616636
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2018216982}
+  m_GameObject: {fileID: 1976616635}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -3382,29 +3429,29 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 17.5, y: 4}
-  m_SizeDelta: {x: -162.8896, y: -73.7099}
+  m_AnchoredPosition: {x: -6.8687134, y: 6.3293}
+  m_SizeDelta: {x: -239.2168, y: -129.5643}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2018216984
+--- !u!114 &1976616637
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2018216982}
+  m_GameObject: {fileID: 1976616635}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4d61a8b37b4a504187c3a977603ce96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Format: '{0}'
---- !u!114 &2018216985
+--- !u!114 &1976616638
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2018216982}
+  m_GameObject: {fileID: 1976616635}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
@@ -3418,7 +3465,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Spell of Drain Health
+  m_text: Spell of <color=#aaaa00FF><b>Speedify</b></color>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f6f8f20ed7e5da45a1a7a500b617300, type: 2}
   m_sharedMaterial: {fileID: 3339608138748224192, guid: 8f6f8f20ed7e5da45a1a7a500b617300, type: 2}
@@ -3427,8 +3474,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4288519581
-  m_fontColor: {r: 0.61725056, g: 0.61725056, b: 0.61725056, a: 1}
+    rgba: 3499990429
+  m_fontColor: {r: 0.61725056, g: 0.61725056, b: 0.61725056, a: 0.8156863}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3445,8 +3492,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 50
-  m_fontSizeBase: 50
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3484,19 +3531,19 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 23.22303, y: 0, z: 0, w: 0}
+  m_margin: {x: 24.46241, y: -47.495068, z: 22.308708, w: -43.9238}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!222 &2018216986
+--- !u!222 &1976616639
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2018216982}
+  m_GameObject: {fileID: 1976616635}
   m_CullTransparentMesh: 1
 --- !u!1001 &2022363672
 PrefabInstance:
@@ -3825,6 +3872,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1277300313027620920, guid: 42d4a639413261441a32131fef322c1c, type: 3}
+      propertyPath: <SpellName>k__BackingField
+      value: Spell of <color=#aa2200aa><b>Drain Health</b></color>
+      objectReference: {fileID: 0}
+    - target: {fileID: 2444987771480756822, guid: 42d4a639413261441a32131fef322c1c, type: 3}
+      propertyPath: _spellNameDisplay
+      value: 
+      objectReference: {fileID: 116730887}
     - target: {fileID: 2444987771480756822, guid: 42d4a639413261441a32131fef322c1c, type: 3}
       propertyPath: <_movementSpeed>k__BackingField
       value: 4
@@ -3833,9 +3888,25 @@ PrefabInstance:
       propertyPath: _effects.OnHPChange.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 514581985}
+    - target: {fileID: 3840726889205179329, guid: 42d4a639413261441a32131fef322c1c, type: 3}
+      propertyPath: <SpellName>k__BackingField
+      value: Spell of <color=#aaaa00FF><b>Speedify</b></color>
+      objectReference: {fileID: 0}
     - target: {fileID: 4466220167356015076, guid: 42d4a639413261441a32131fef322c1c, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5033625897684252512, guid: 42d4a639413261441a32131fef322c1c, type: 3}
+      propertyPath: <SpellName>k__BackingField
+      value: Spell of <color=#88ff0088>Healing</color></i>
+      objectReference: {fileID: 0}
+    - target: {fileID: 5121977074816365266, guid: 42d4a639413261441a32131fef322c1c, type: 3}
+      propertyPath: <SpellName>k__BackingField
+      value: Spell of <color=#aa00cc88>Cloning</color></i>
+      objectReference: {fileID: 0}
+    - target: {fileID: 5602345120548143935, guid: 42d4a639413261441a32131fef322c1c, type: 3}
+      propertyPath: <SpellName>k__BackingField
+      value: <i>Spell of <color=#ffffff88>Miniaturize</color></i>
       objectReference: {fileID: 0}
     - target: {fileID: 5604669810898644924, guid: 42d4a639413261441a32131fef322c1c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3876,6 +3947,10 @@ PrefabInstance:
     - target: {fileID: 5604669810898644924, guid: 42d4a639413261441a32131fef322c1c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7078039561814694929, guid: 42d4a639413261441a32131fef322c1c, type: 3}
+      propertyPath: <SpellName>k__BackingField
+      value: Spell of <color=#ffffff88><b>Make Big</b></color>
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
