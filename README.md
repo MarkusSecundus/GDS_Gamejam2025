@@ -7,3 +7,5 @@ Credits:
  - heal_spell: https://freesound.org/people/milton./sounds/183457/
  - enemy_sword: https://freesound.org/people/CogFireStudios/sounds/547040/
  - hurt_enemy0: https://freesound.org/people/kibibu/sounds/22433/
+ - electro_spell: https://freesound.org/people/newlocknew/sounds/702908/
+ - size_up_spell, size_down_spell: MuseScore MuseSounds - contrabass
