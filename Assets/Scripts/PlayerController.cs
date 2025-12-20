@@ -5,6 +5,7 @@ using MarkusSecundus.Utils.Primitives;
 using MarkusSecundus.Utils.Randomness;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 
 public enum WeaponType
@@ -215,19 +216,35 @@ public abstract class CharacterController : MonoBehaviour
 
 
 
+
+
+
+
+
+
 public class PlayerController : CharacterController
 {
 	[SerializeField] Transform _spellRoot;
 
 	AbstractSpell[] _allSpells;
 	int _currentSpellIdx = 0;
+
+
+	InputAction moveAction;
+	InputAction lookAction;
+	InputAction staffAction;
+	InputAction swordAction;
 	protected override void Start()
 	{
 		base.Start();
 		_allSpells = _spellRoot.GetComponentsInChildren<AbstractSpell>(true);
 		RandomHelpers.Rand.Shuffle<AbstractSpell>(_allSpells);
-	}
 
+		moveAction = InputSystem.actions.FindAction("Move");
+		lookAction = InputSystem.actions.FindAction("Look");
+		staffAction = InputSystem.actions.FindAction("Staff");
+		swordAction = InputSystem.actions.FindAction("Sword");
+	}
 
 	protected override Rigidbody2D _getProjectile()
 	{
@@ -237,23 +254,48 @@ public class PlayerController : CharacterController
 		return ret.GetComponent<Rigidbody2D>();
 	}
 
+
+	Vector3? _lastMousePosition;
+	Vector2? _lastLookValue;
+	bool _isGamepadMode = false;
     protected override float _getLookRotation()
     {
-        var worldCursorPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        var lookDirection = worldCursorPos - _rotatable.position;
-        return Mathf.Rad2Deg* Mathf.Atan2(lookDirection.y, lookDirection.x);
-    }
+		Vector3 currentMousePosition = Input.mousePosition;
+		Vector2 currentLookValue = lookAction.ReadValue<Vector2>();
+		if(currentMousePosition != _lastMousePosition)
+		{
+			_lastMousePosition = currentMousePosition;
+			_isGamepadMode = false;
+			Cursor.visible = true;
+		}
+		else if(currentLookValue != _lastLookValue)
+		{
+			_lastLookValue = currentLookValue;
+			_isGamepadMode = true;
+			Cursor.visible = false;
+		}
+
+		Vector2 lookDirection;
+		if (!_isGamepadMode)
+		{
+			var worldCursorPos = Camera.main.ScreenToWorldPoint(currentMousePosition);
+			lookDirection = worldCursorPos - _rotatable.position;
+		}
+		else
+		{
+			lookDirection = lookAction.ReadValue<Vector2>();
+		}
+		return Mathf.Rad2Deg * Mathf.Atan2(lookDirection.y, lookDirection.x);
+
+	}
     protected override Vector2 _getTargetMovement()
     {
-        Vector2 ret = Vector3.zero;
-        ret.x += Input.GetAxis("Horizontal");
-        ret.y += Input.GetAxis("Vertical");
-        return ret;
+		return moveAction.ReadValue<Vector2>();
 	}
 	protected override bool _isShootCommand()
-		=> Input.GetKeyDown(KeyCode.Mouse0);
+		=> staffAction.WasPressedThisFrame();
 
 
 	protected override bool _isSidearmCommand()
-		=> Input.GetKeyDown(KeyCode.Mouse1);
+		=> swordAction.WasPressedThisFrame();
 }
