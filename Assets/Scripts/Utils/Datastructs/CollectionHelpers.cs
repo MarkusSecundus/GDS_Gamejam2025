@@ -180,6 +180,8 @@ namespace MarkusSecundus.Utils.Datastructs
         }
         public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> self) => new Dictionary<TKey, TValue>(self);
 
+        public static TValue SetIfNotPresent<TKey, TValue>(this IDictionary<TKey, TValue> self, TKey key, TValue defaultValue) => self.TryGetValue(key, out var ret) ? ret : (self[key] = defaultValue);
+
         public static T[] Concat<T>(this T[] self, T[] toConcat)
         {
             if (self.IsNullOrEmpty()) return toConcat ?? System.Array.Empty<T>();

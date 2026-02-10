@@ -29881,6 +29881,9 @@ MonoBehaviour:
     SidearmAnimation: {fileID: 1334209934121718253}
   _spellRoot: {fileID: 1625181465261827200}
   _camera: {fileID: 3236948404645302990}
+  _spritesToColor:
+  - {fileID: 6049834273007772462}
+  - {fileID: 7583484177062002003}
 --- !u!114 &3412856358623437569
 MonoBehaviour:
   m_ObjectHideFlags: 0

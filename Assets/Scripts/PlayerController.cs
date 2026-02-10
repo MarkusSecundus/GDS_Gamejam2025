@@ -2,11 +2,13 @@ using DG.Tweening;
 using MarkusSecundus.Utils.Behaviors.Cosmetics;
 using MarkusSecundus.Utils.Behaviors.GameObjects;
 using MarkusSecundus.Utils.Behaviors.GUI;
+using MarkusSecundus.Utils.Datastructs;
 using MarkusSecundus.Utils.Extensions;
 using MarkusSecundus.Utils.Physics;
 using MarkusSecundus.Utils.Primitives;
 using MarkusSecundus.Utils.Randomness;
 using Photon.Pun;
+using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
@@ -197,6 +199,8 @@ public abstract class CharacterController : MonoBehaviourPun
 		public float GunKnockbackEnd = 0.1f;
 
 		public Animator SidearmAnimation;
+
+		public Dictionary<Component, Color> OgColors = new();
 	}
 	[SerializeField] public EffectDetails _effects;
 
@@ -229,10 +233,11 @@ public abstract class CharacterController : MonoBehaviourPun
 
 		foreach (var spr in _effects.Sprites)
 		{
+			var ogColor = _effects.OgColors.SetIfNotPresent(spr, spr.color);
 			spr.DOColor(hurtColor, buildup).OnComplete(() =>
 			{
 				if (!spr) return;
-				spr.DOColor(Color.white, end).SetDelay(sustain).OnComplete(
+				spr.DOColor(ogColor, end).SetDelay(sustain).OnComplete(
 					() => {
 						_isEffectInProgress = false;
 					}
@@ -255,6 +260,7 @@ public class PlayerController : CharacterController
 	[SerializeField] Transform _spellRoot;
 
 	[SerializeField] CinemachineCamera _camera;
+	[SerializeField] SpriteRenderer[] _spritesToColor;
 
 	AbstractSpell[] _allSpells;
 	int _currentSpellIdx = 0;
@@ -276,6 +282,10 @@ public class PlayerController : CharacterController
 
 		_allSpells = _spellRoot.GetComponentsInChildren<AbstractSpell>(true);
 		_rand.Shuffle<AbstractSpell>(_allSpells);
+		foreach(var spr in _spritesToColor)
+		{
+			spr.color = Color.HSVToRGB(_rand.NextFloat(), _rand.NextFloat(0.5f, 1.0f), 1.0f);
+		}
 
 		moveAction = InputSystem.actions.FindAction("Move");
 		lookAction = InputSystem.actions.FindAction("Look");
