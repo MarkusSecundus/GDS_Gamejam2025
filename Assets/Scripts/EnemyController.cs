@@ -39,7 +39,7 @@ public class EnemyController : CharacterController
 			DoDie(_effects.HurtColor);
 	}
 
-	Vector2 _getDirectionToPlayer() => (_player.transform.position - transform.position).xy();
+	Vector2 _getDirectionToPlayer() => _player ? (_player.transform.position - transform.position).xy() : Vector3.zero;
 
 	protected override float _getLookRotation()
 	{
@@ -49,7 +49,7 @@ public class EnemyController : CharacterController
 
 	protected override Vector2 _getTargetMovement()
 	{
-		if(!_didNoticeThePlayer) return Vector2.zero;
+		if((!_didNoticeThePlayer) || (!_player)) return Vector2.zero;
 
 		var dir = _getDirectionToPlayer().normalized;
 		if (_getNearestObstruction(dir, 10f) >= 2f)
@@ -104,6 +104,7 @@ public class EnemyController : CharacterController
 
 	bool _isInAttackRange()
 	{
+		if (!_player) return false;
 		var playerDir = _getDirectionToPlayer();
 		return _getNearestObstruction(playerDir) > 9999f && _distanceToShoot.Contains(playerDir.magnitude);
 	}
@@ -112,6 +113,7 @@ public class EnemyController : CharacterController
 
 	protected override bool _isSidearmCommand()
 	{
+		if (!_player) return false;
 		if (! (_favouriteWeapon == WeaponType.Mellee && _isInAttackRange())) return false;
 		return _areaDamager.TriggerInfo.GetActiveTriggers2D().Any(c => c.attachedRigidbody && c.attachedRigidbody.gameObject == _player.gameObject);
 	}

@@ -1,8 +1,10 @@
 using DG.Tweening;
+using MarkusSecundus.Utils.Behaviors.Cosmetics;
 using MarkusSecundus.Utils.Extensions;
 using MarkusSecundus.Utils.Physics;
 using MarkusSecundus.Utils.Primitives;
 using MarkusSecundus.Utils.Randomness;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -13,7 +15,7 @@ public enum WeaponType
 	Ranged, Mellee
 }
 
-public abstract class CharacterController : MonoBehaviour
+public abstract class CharacterController : MonoBehaviourPun
 {
 	[field: SerializeField] public float HP { get; private set; } = -1f;
 	[field: SerializeField] public float MaxHP { get; private set; }
@@ -30,9 +32,9 @@ public abstract class CharacterController : MonoBehaviour
 
 	[SerializeField] protected WeaponType _favouriteWeapon = WeaponType.Ranged;
 
-	[SerializeField] UnityEvent OnDie;
+	[SerializeField] protected UnityEvent OnDie;
 
-	[SerializeField] TopBarController _spellNameDisplay;
+	[SerializeField] protected TopBarController _spellNameDisplay;
 
 	protected AudioSource _audioPlayer;
 
@@ -54,15 +56,19 @@ public abstract class CharacterController : MonoBehaviour
 		_audioPlayer = GetComponent<AudioSource>();
 	}
 
+
 	protected virtual void Update()
 	{
-		_rotatable.rotation = _getLookRotation().AsRotation2D();
+		if ((! _isAttackNetworked()) || this.photonView.IsMine)
+		{
+			_rotatable.rotation = _getLookRotation().AsRotation2D();
 
-		var targetVelocity = _getTargetMovement().xy0() * _movementSpeed;
-		_rigidbody.SteerToVelocity(targetVelocity, _maxVelocityChange);
+			var targetVelocity = _getTargetMovement().xy0() * _movementSpeed;
+			_rigidbody.SteerToVelocity(targetVelocity, _maxVelocityChange);
 
-		if (_isShootCommand()) _doShoot();
-		else if (_isSidearmCommand()) _doSidearm();
+			if (_isShootCommand()) _doShoot();
+			else if (_isSidearmCommand()) _doSidearm();
+		}
 	}
 
 	private double _nextAllowedShootTimestamp = float.NegativeInfinity;
@@ -74,18 +80,29 @@ public abstract class CharacterController : MonoBehaviour
 		var originalGunPosition = _effects.GunObject.transform.localPosition.xy();
 		_effects.GunObject.DOLocalMove(originalGunPosition + _effects.GunKnockback, _effects.GunKnockbackBuildup).OnComplete(() =>
 		{
-			var newProjectile = _getProjectile().gameObject.InstantiateWithTransform(true, true, true, false).GetComponent<Rigidbody2D>();
-			var shootDirection = (newProjectile.position - transform.position.xy()).normalized;
-			newProjectile.AddForce(shootDirection * _shootForce, ForceMode2D.Impulse);
-			var projectile = newProjectile.GetComponent<AbstractProjectileController>();
-			if (_spellNameDisplay && projectile is AbstractSpell spell)
-			{
-				_spellNameDisplay.ShowText(spell.SpellName);
-			}
-			if (projectile.CastSound) _audioPlayer.PlayOneShot(projectile.CastSound);
+			if (_isAttackNetworked())
+				photonView.RPC(nameof(_rpcPerformShootProjectile), RpcTarget.All);
+			else
+				_rpcPerformShootProjectile();
 
 			_effects.GunObject.DOLocalMove(originalGunPosition, _effects.GunKnockbackEnd).SetDelay(_effects.GunKnockbackSustain);
 		});
+	}
+
+	protected virtual bool _isAttackNetworked() => false;
+
+	[PunRPC]
+	public void _rpcPerformShootProjectile()
+	{
+		var newProjectile = _getProjectile().gameObject.InstantiateWithTransform(true, true, true, false).GetComponent<Rigidbody2D>();
+		var shootDirection = (newProjectile.position - transform.position.xy()).normalized;
+		newProjectile.AddForce(shootDirection * _shootForce, ForceMode2D.Impulse);
+		var projectile = newProjectile.GetComponent<AbstractProjectileController>();
+		if (_spellNameDisplay && projectile is AbstractSpell spell)
+		{
+			_spellNameDisplay.ShowText(spell.SpellName);
+		}
+		if (projectile.CastSound) _audioPlayer.PlayOneShot(projectile.CastSound);
 	}
 
 	protected virtual Rigidbody2D _getProjectile()
@@ -237,6 +254,7 @@ public class PlayerController : CharacterController
 	protected override void Start()
 	{
 		base.Start();
+		DontDestroyOnLoad(gameObject);
 		_allSpells = _spellRoot.GetComponentsInChildren<AbstractSpell>(true);
 		RandomHelpers.Rand.Shuffle<AbstractSpell>(_allSpells);
 
@@ -244,6 +262,17 @@ public class PlayerController : CharacterController
 		lookAction = InputSystem.actions.FindAction("Look");
 		staffAction = InputSystem.actions.FindAction("Staff");
 		swordAction = InputSystem.actions.FindAction("Sword");
+
+		_setupPlayerGUI();
+	}
+
+
+	void _setupPlayerGUI()
+	{
+		if (!this.photonView.IsMine) return;
+
+		OnDie.AddListener(GameObject.FindWithTag("LossFader").GetComponent<FadeEffect>().FadeIn);
+		_spellNameDisplay = GameObject.FindWithTag("TopBar").GetComponent<TopBarController>();
 	}
 
 	protected override Rigidbody2D _getProjectile()
@@ -254,6 +283,7 @@ public class PlayerController : CharacterController
 		return ret.GetComponent<Rigidbody2D>();
 	}
 
+	protected override bool _isAttackNetworked() => true;
 
 	Vector3? _lastMousePosition;
 	Vector2? _lastLookValue;

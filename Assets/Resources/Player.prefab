@@ -29724,6 +29724,8 @@ GameObject:
   - component: {fileID: 2444987771480756822}
   - component: {fileID: 3412856358623437569}
   - component: {fileID: 562767406185240173}
+  - component: {fileID: 6680275255637650630}
+  - component: {fileID: 3607846573920590493}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -29999,6 +30001,46 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &6680275255637650630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4466220167356015076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PhotonUnityNetworking::Photon.Pun.PhotonView
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 2
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 3607846573920590493}
+  - {fileID: 9198766584704895411}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &3607846573920590493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4466220167356015076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PhotonUnityNetworking::Photon.Pun.PhotonTransformView
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 1
+  m_UseLocal: 1
 --- !u!1 &4537120028349975971
 GameObject:
   m_ObjectHideFlags: 0
@@ -40444,6 +40486,7 @@ MonoBehaviour:
   <Type>k__BackingField: 1
   _victimParticles: {fileID: 0}
   _caster: {fileID: 2444987771480756822}
+  _maxDamage: 4
 --- !u!1 &8677111632373480898
 GameObject:
   m_ObjectHideFlags: 0
@@ -50396,6 +50439,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9194531817421884384}
   - component: {fileID: 2361890347845779904}
+  - component: {fileID: 9198766584704895411}
   m_Layer: 0
   m_Name: Rotatable
   m_TagString: Untagged
@@ -50456,3 +50500,19 @@ MonoBehaviour:
   _onDestroy:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &9198766584704895411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9126708470886376222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PhotonUnityNetworking::Photon.Pun.PhotonTransformView
+  m_SynchronizePosition: 0
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
