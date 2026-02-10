@@ -5,6 +5,7 @@ using MarkusSecundus.Utils.Physics;
 using MarkusSecundus.Utils.Primitives;
 using MarkusSecundus.Utils.Randomness;
 using Photon.Pun;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -243,6 +244,8 @@ public class PlayerController : CharacterController
 {
 	[SerializeField] Transform _spellRoot;
 
+	[SerializeField] CinemachineCamera _camera;
+
 	AbstractSpell[] _allSpells;
 	int _currentSpellIdx = 0;
 
@@ -251,17 +254,28 @@ public class PlayerController : CharacterController
 	InputAction lookAction;
 	InputAction staffAction;
 	InputAction swordAction;
+
+	System.Random _rand;
 	protected override void Start()
 	{
 		base.Start();
 		DontDestroyOnLoad(gameObject);
+
+		var randomSeed = (int)this.photonView.InstantiationData[0];
+		_rand = new System.Random(randomSeed);
+
 		_allSpells = _spellRoot.GetComponentsInChildren<AbstractSpell>(true);
-		RandomHelpers.Rand.Shuffle<AbstractSpell>(_allSpells);
+		_rand.Shuffle<AbstractSpell>(_allSpells);
 
 		moveAction = InputSystem.actions.FindAction("Move");
 		lookAction = InputSystem.actions.FindAction("Look");
 		staffAction = InputSystem.actions.FindAction("Staff");
 		swordAction = InputSystem.actions.FindAction("Sword");
+
+		if (this.photonView.IsMine)
+		{
+			_camera.gameObject.SetActive(true);
+		}
 
 		_setupPlayerGUI();
 	}

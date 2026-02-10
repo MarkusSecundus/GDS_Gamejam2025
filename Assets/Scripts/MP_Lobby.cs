@@ -1,4 +1,5 @@
 using MarkusSecundus.Utils.Extensions;
+using MarkusSecundus.Utils.Randomness;
 using Photon.Pun;
 using Photon.Realtime;
 using System.Collections.Generic;
@@ -51,13 +52,9 @@ public class MP_Lobby : MonoBehaviourPunCallbacks
 		void onLoaded(UnityEngine.SceneManagement.Scene s, LoadSceneMode mode)
 		{
 			SceneManager.sceneLoaded -= onLoaded;
-			this.InvokeWithDelay(() =>
-			{
-				var playerSpawn = GameObject.FindWithTag("PlayerSpawn");
-				var player = PhotonNetwork.Instantiate("Player", playerSpawn.transform.position, playerSpawn.transform.rotation, 0);
-				Destroy(gameObject);
-			}, 1.0f);
-		};
+			_spawnPlayerAndDestroySelf_delayed();
+		}
+		;
 		SceneManager.sceneLoaded += onLoaded;
 
 		PhotonNetwork.JoinRoom(room.Name);
@@ -78,18 +75,26 @@ public class MP_Lobby : MonoBehaviourPunCallbacks
 		void onLoaded (UnityEngine.SceneManagement.Scene s, LoadSceneMode mode)
 		{
 			SceneManager.sceneLoaded -= onLoaded;
-			this.InvokeWithDelay(() =>
-			{
-				var playerSpawn = GameObject.FindWithTag("PlayerSpawn");
-				var player = PhotonNetwork.Instantiate("Player", playerSpawn.transform.position, playerSpawn.transform.rotation, 0);
-				Destroy(gameObject);
-			}, 1.0f);
-		};
+			_spawnPlayerAndDestroySelf_delayed();
+		}
+		;
 		SceneManager.sceneLoaded += onLoaded;
 
 		PhotonNetwork.AutomaticallySyncScene = true;
 		PhotonNetwork.LoadLevel("SampleScene");
 
+	}
+
+
+	void _spawnPlayerAndDestroySelf_delayed()
+	{
+		this.InvokeWithDelay(() =>
+		{
+			var playerSpawn = GameObject.FindWithTag("PlayerSpawn");
+			var seed = RandomHelpers.Rand.Next();
+			var player = PhotonNetwork.Instantiate("Player", playerSpawn.transform.position, playerSpawn.transform.rotation, 0, new object[] {seed});
+			Destroy(gameObject);
+		}, 1.0f);
 	}
 
 	public override void OnJoinedRoom()

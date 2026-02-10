@@ -10,6 +10,7 @@ public class CloneSpell : AbstractSpell
 	[SerializeField] Vector2 _placementOffset = new Vector2(0.3f, 0.3f);
 	protected override void DamageTheCharacter(CharacterController character)
 	{
+		if (character is PlayerController) return;
 		var clone = character.gameObject.InstantiateWithTransform().GetComponent<CharacterController>();
 		var normalScale = clone.transform.localScale;
 		clone.transform.localScale = Vector2.zero;
