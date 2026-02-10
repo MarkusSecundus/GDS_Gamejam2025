@@ -1,5 +1,7 @@
 using DG.Tweening;
 using MarkusSecundus.Utils.Behaviors.Cosmetics;
+using MarkusSecundus.Utils.Behaviors.GameObjects;
+using MarkusSecundus.Utils.Behaviors.GUI;
 using MarkusSecundus.Utils.Extensions;
 using MarkusSecundus.Utils.Physics;
 using MarkusSecundus.Utils.Primitives;
@@ -205,7 +207,7 @@ public abstract class CharacterController : MonoBehaviourPun
 	public void DoDie(Color dieColor)
 	{
 		Debug.Log($"Dies: {this}", this);
-		_audioPlayer.PlayOneShot(_sounds.DieSound);
+		if(_sounds.DieSound) _audioPlayer.PlayOneShot(_sounds.DieSound);
 
 		_isEffectInProgress = true;
 		foreach (var spr in _effects.Sprites)
@@ -280,11 +282,6 @@ public class PlayerController : CharacterController
 		staffAction = InputSystem.actions.FindAction("Staff");
 		swordAction = InputSystem.actions.FindAction("Sword");
 
-		if (this.photonView.IsMine)
-		{
-			_camera.gameObject.SetActive(true);
-		}
-
 		_setupPlayerGUI();
 	}
 
@@ -293,8 +290,11 @@ public class PlayerController : CharacterController
 	{
 		if (!this.photonView.IsMine) return;
 
+		_camera.gameObject.SetActive(true);
 		OnDie.AddListener(GameObject.FindWithTag("LossFader").GetComponent<FadeEffect>().FadeIn);
 		_spellNameDisplay = GameObject.FindWithTag("TopBar").GetComponent<TopBarController>();
+		var hpBar = TagSearchable.FindByTag<TMProFormatter>("HpBar");
+		_effects.OnHPChange.AddListener(hpBar.SetTextWithStringArgument);
 	}
 
 	protected override Rigidbody2D _getProjectile()
