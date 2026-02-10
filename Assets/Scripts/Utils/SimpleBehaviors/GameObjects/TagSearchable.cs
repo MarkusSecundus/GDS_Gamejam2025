@@ -41,16 +41,16 @@ namespace MarkusSecundus.Utils.Behaviors.GameObjects
             return null;
         }
 
-        public static IEnumerable<GameObject> FindAllByTag(string tag)
+        public static IReadOnlyList<GameObject> FindAllByTag(string tag)
         {
             if (!_values.TryGetValue(tag, out var list) || list.IsNullOrEmpty())
-                return null;
+                return Array.Empty<GameObject>();
             return list;
         }
 
         public static IEnumerable<TComponent> FindAllByTag<TComponent>(string tag) where TComponent : Component
         {
-            return FindAllByTag(tag)?.Select(o => o.GetComponents<TComponent>())?.Flatten();
+            return FindAllByTag(tag).Select(o => o.GetComponents<TComponent>()).Flatten();
         }
 
         protected virtual void Awake()

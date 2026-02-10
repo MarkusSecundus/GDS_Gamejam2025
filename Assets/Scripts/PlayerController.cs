@@ -117,8 +117,16 @@ public abstract class CharacterController : MonoBehaviourPun
 		_nextAllowedShootTimestamp = Time.timeAsDouble + _shootCooldown_seconds;
 
 		//Debug.Log($"Doing sidearm!", this);
+		if (_isAttackNetworked())
+			photonView.RPC(nameof(_rpcPerformSidearm), RpcTarget.All);
+		else
+			_rpcPerformSidearm();
+	}
 
-		if(_effects.GunObject) _effects.GunObject.gameObject.SetActive(false);
+	[PunRPC]
+	public void _rpcPerformSidearm()
+	{
+		if (_effects.GunObject) _effects.GunObject.gameObject.SetActive(false);
 		_effects.SidearmAnimation.gameObject.SetActive(true);
 		_effects.SidearmAnimation.SetTrigger("DoAttack");
 		_audioPlayer.PlayOneShot(_sounds.SidearmSound);

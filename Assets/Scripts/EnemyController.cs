@@ -1,6 +1,10 @@
 using MarkusSecundus.Utils.Behaviors.GameObjects;
+using MarkusSecundus.Utils.Datastructs;
+using MarkusSecundus.Utils.Extensions;
 using MarkusSecundus.Utils.Primitives;
+using MarkusSecundus.Utils.Randomness;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -26,13 +30,24 @@ public class EnemyController : CharacterController
 
 		_player = TagSearchable.FindByTag<PlayerController>("Player");
 		_areaDamager = GetComponentInChildren<AreaDamager>();
+
+		StartCoroutine(updateNearestPlayer());
+		IEnumerator updateNearestPlayer()
+		{
+			while (true)
+			{
+				_player = TagSearchable.FindAllByTag<PlayerController>("Player").Where(p => p.IsNotNil()).MinimalOrDefault(p => p.transform.position.DistanceSqr(this.transform.position));
+
+				yield return new WaitForSeconds(RandomHelpers.Rand.NextFloat(0.2f, 0.5f));
+			}
+		}
 	}
 
 	protected override void Update()
 	{
 		base.Update();
 
-		if (!_didNoticeThePlayer && _getDirectionToPlayer().sqrMagnitude < _radiusToNoticePlayer.Sqr())
+		if (!_didNoticeThePlayer && (_getDirectionToPlayer().sqrMagnitude < _radiusToNoticePlayer.Sqr()))
 			_didNoticeThePlayer = true;
 
 		if (!_isStillGrowing && !_survivableScale.Contains(transform.localScale.MaxField()))

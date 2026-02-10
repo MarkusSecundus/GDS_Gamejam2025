@@ -148,6 +148,36 @@ namespace MarkusSecundus.Utils.Datastructs
 
             return ret;
         }
+
+        /// <summary>
+        /// Gets smallest value in a stream, using provided selector for comparisons.
+        /// </summary>
+        /// <typeparam name="T">Type of the elements</typeparam>
+        /// <typeparam name="TComp">Type of the elements used for comparison</typeparam>
+        /// <param name="self">Stream to be searched through</param>
+        /// <param name="selector">Function for obtaining comparable representative for each element</param>
+        /// <returns>Value whose representative was the smallest</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">If the provided stream is empty</exception>
+        public static T MinimalOrDefault<T, TComp>(this IEnumerable<T> self, System.Func<T, TComp> selector, T defaultRet = default) where TComp : System.IComparable<TComp>
+        {
+            using var it = self.GetEnumerator();
+            if (!it.MoveNext()) return defaultRet;
+
+            var ret = it.Current;
+            var min = selector(ret);
+
+            while (it.MoveNext())
+            {
+                var cmp = selector(it.Current);
+                if (cmp.CompareTo(min) < 0)
+                {
+                    min = cmp;
+                    ret = it.Current;
+                }
+            }
+
+            return ret;
+        }
         public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> self) => new Dictionary<TKey, TValue>(self);
 
         public static T[] Concat<T>(this T[] self, T[] toConcat)
