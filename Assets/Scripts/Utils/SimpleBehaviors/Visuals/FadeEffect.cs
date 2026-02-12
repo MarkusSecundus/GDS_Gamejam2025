@@ -54,7 +54,7 @@ namespace MarkusSecundus.Utils.Behaviors.Cosmetics
             {
                 rend.gameObject.SetActive(true);
                 rend.color = rend.color.With(a: alphaBegin);
-                var tween = last = rend.DOFade(alphaEnd, duration_seconds).SetEase(ease);
+                var tween = last = rend.DOFade(alphaEnd, duration_seconds).SetEase(ease).SetLink(rend.gameObject);
                 _tweens.Add(tween);
                 if (alphaEnd <= 0f) tween.onComplete += () => rend.gameObject.SetActive(false);
             }
@@ -72,10 +72,10 @@ namespace MarkusSecundus.Utils.Behaviors.Cosmetics
             }
         }
         List<Tween> _tweens = new();
-        public bool IsRunning => (! _tweens.IsNullOrEmpty()) && _tweens.Any(t => t.IsPlaying());
+        public bool IsRunning => (! _tweens.IsNullOrEmpty()) && _tweens.Any(t => t.IsActive() && t.IsPlaying());
         public void Stop()
         {
-            foreach (var t in _tweens) if (t.IsPlaying()) t.Kill();
+            foreach (var t in _tweens) if (t.IsActive() && t.IsPlaying()) t.Kill();
             _tweens.Clear();
         }
     }

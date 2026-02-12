@@ -8,8 +8,10 @@ using MarkusSecundus.Utils.Physics;
 using MarkusSecundus.Utils.Primitives;
 using MarkusSecundus.Utils.Randomness;
 using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Cinemachine;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -41,6 +43,8 @@ public abstract class CharacterController : MonoBehaviourPun
 
 	[SerializeField] protected TopBarController _spellNameDisplay;
 
+	[SerializeField] int ScoreForKilling = 100;
+
 	protected AudioSource _audioPlayer;
 
 	[System.Serializable]
@@ -54,16 +58,25 @@ public abstract class CharacterController : MonoBehaviourPun
 	[SerializeField] SoundEffects _sounds;
 
 	Rigidbody2D _rigidbody;
+
+
+	protected System.Random _rand;
+
 	protected virtual void Start()
 	{
 		if (HP < 0f) HP = MaxHP;
 		_rigidbody = GetComponent<Rigidbody2D>();
 		_audioPlayer = GetComponent<AudioSource>();
+
+		var randomSeed = (int)this.photonView.InstantiationData[0];
+		_rand = new System.Random(randomSeed);
+		this.name = this.name + "_" + randomSeed.ToString();
 	}
 
 
 	protected virtual void Update()
 	{
+		if (IsDead) return;
 		if ((! _isAttackNetworked()) || this.photonView.IsMine)
 		{
 			_rotatable.rotation = _getLookRotation().AsRotation2D();
@@ -90,11 +103,11 @@ public abstract class CharacterController : MonoBehaviourPun
 			else
 				_rpcPerformShootProjectile();
 
-			_effects.GunObject.DOLocalMove(originalGunPosition, _effects.GunKnockbackEnd).SetDelay(_effects.GunKnockbackSustain);
-		});
+			_effects.GunObject.DOLocalMove(originalGunPosition, _effects.GunKnockbackEnd).SetDelay(_effects.GunKnockbackSustain).SetLink(_effects.GunObject.gameObject);
+		}).SetLink(_effects.GunObject.gameObject);
 	}
 
-	protected virtual bool _isAttackNetworked() => false;
+	protected virtual bool _isAttackNetworked() => true;
 
 	[PunRPC]
 	public void _rpcPerformShootProjectile()
@@ -152,9 +165,16 @@ public abstract class CharacterController : MonoBehaviourPun
 	protected abstract bool _isShootCommand();
 	protected virtual bool _isSidearmCommand() => false;
 
+
+	protected PlayerController _lastDamagePlayer = null;
+
 	public virtual void DoDamage(float damage, Object tag)
 	{
 		if (IsDead) return;
+
+		var tagPlayer = tag.GetComponentInParent<PlayerController>();
+		if (tagPlayer) _lastDamagePlayer = tagPlayer;
+
 		HP -= damage;
 		_effects.OnHPChange.Invoke($"{HP}");
 		if (IsDead)
@@ -166,9 +186,15 @@ public abstract class CharacterController : MonoBehaviourPun
 	public void DoHeal(float hp)
 	{
 		if (IsDead) return;
+		DoHealForceNoAnimation(hp);
+		_hurtAnimation(_effects.HealColor, _effects.HealBlinkBuildup, _effects.HealBlinkSustain, _effects.HealBlinkEnd, _sounds.HealSound);
+
+	}
+
+	public void DoHealForceNoAnimation(float hp)
+	{
 		HP = Mathf.Min(HP + hp, MaxHP);
 		_effects.OnHPChange.Invoke($"{HP}");
-		_hurtAnimation(_effects.HealColor, _effects.HealBlinkBuildup, _effects.HealBlinkSustain, _effects.HealBlinkEnd, _sounds.HealSound);
 
 	}
 
@@ -201,6 +227,7 @@ public abstract class CharacterController : MonoBehaviourPun
 		public Animator SidearmAnimation;
 
 		public Dictionary<Component, Color> OgColors = new();
+		public Vector3? OgLocalScale = null;
 	}
 	[SerializeField] public EffectDetails _effects;
 
@@ -211,18 +238,31 @@ public abstract class CharacterController : MonoBehaviourPun
 	public void DoDie(Color dieColor)
 	{
 		Debug.Log($"Dies: {this}", this);
+
+		if (_lastDamagePlayer && ScoreForKilling != 0)
+		{
+			_lastDamagePlayer.AddScore(ScoreForKilling);
+		}
+		
 		if(_sounds.DieSound) _audioPlayer.PlayOneShot(_sounds.DieSound);
+
+		_effects.OgLocalScale ??= transform.localScale;
 
 		_isEffectInProgress = true;
 		foreach (var spr in _effects.Sprites)
 		{
-			spr.DOColor(dieColor, _effects.DeathColorBuildup);
+			spr.DOColor(dieColor, _effects.DeathColorBuildup).SetLink(spr.gameObject);
 		}
 		OnDie?.Invoke();
 		transform.DOScale(0f, _effects.DeathEffectDuration).OnComplete(() =>
 		{
-			Destroy(gameObject);
-		});
+			_doDestroySelf();
+		}).SetLink(transform.gameObject);
+	}
+
+	protected virtual void _doDestroySelf()
+	{
+		Destroy(gameObject, 0.5f);
 	}
 
 
@@ -241,8 +281,8 @@ public abstract class CharacterController : MonoBehaviourPun
 					() => {
 						_isEffectInProgress = false;
 					}
-				);
-			});
+				).SetLink(spr.gameObject);
+			}).SetLink(spr.gameObject);
 		}
 	}
 }
@@ -262,6 +302,8 @@ public class PlayerController : CharacterController
 	[SerializeField] CinemachineCamera _camera;
 	[SerializeField] SpriteRenderer[] _spritesToColor;
 
+	int CurrentScore = 0;
+
 	AbstractSpell[] _allSpells;
 	int _currentSpellIdx = 0;
 
@@ -271,14 +313,13 @@ public class PlayerController : CharacterController
 	InputAction staffAction;
 	InputAction swordAction;
 
-	System.Random _rand;
 	protected override void Start()
 	{
 		base.Start();
 		DontDestroyOnLoad(gameObject);
 
-		var randomSeed = (int)this.photonView.InstantiationData[0];
-		_rand = new System.Random(randomSeed);
+		_effects.OgLocalScale = this.transform.localScale;
+
 
 		_allSpells = _spellRoot.GetComponentsInChildren<AbstractSpell>(true);
 		_rand.Shuffle<AbstractSpell>(_allSpells);
@@ -293,6 +334,18 @@ public class PlayerController : CharacterController
 		swordAction = InputSystem.actions.FindAction("Sword");
 
 		_setupPlayerGUI();
+	}
+
+	public void AddScore(int scoreToAdd)
+	{
+		_rpcAddScore(scoreToAdd);
+		//photonView.RPC(nameof(_rpcAddScore), RpcTarget.All, new object[] { scoreToAdd });
+	}
+
+	[PunRPC]
+	public void _rpcAddScore(int scoreToAdd)
+	{
+		CurrentScore += scoreToAdd;
 	}
 
 
@@ -360,4 +413,39 @@ public class PlayerController : CharacterController
 
 	protected override bool _isSidearmCommand()
 		=> swordAction.WasPressedThisFrame();
+
+
+	[SerializeField] float _respawnSeconds = 5.0f;
+	protected override void _doDestroySelf()
+	{
+		int score = this.CurrentScore;
+		this.CurrentScore = 0;
+		foreach(var spr in _effects.Sprites)
+		{
+			spr.color = _effects.OgColors[spr];
+		}
+		TMProFormatter printout = this.photonView.IsMine ? GameObject.FindWithTag("LossFader").GetComponentInChildren<TMProFormatter>() : null;
+
+
+		StartCoroutine(respawnCountdown());
+		IEnumerator respawnCountdown()
+		{
+			double respawnTime = Time.timeAsDouble + _respawnSeconds;
+			while (true)
+			{
+				double timeUntilRespawn = respawnTime - Time.timeAsDouble;
+				if (printout) printout.SetTextWithVarargs(timeUntilRespawn, score);
+
+				if (Time.timeAsDouble >= respawnTime)
+					break;
+
+				yield return null;
+			}
+			if(photonView.IsMine)
+				GameObject.FindWithTag("LossFader").GetComponent<FadeEffect>().FadeOut();
+			this.DoHealForceNoAnimation(10f);
+			this.transform.position = GameObject.FindWithTag("PlayerSpawn").transform.position;
+			this.transform.DOScale(_effects.OgLocalScale.Value, 1.0f).SetLink(gameObject);
+		}
+	}
 }

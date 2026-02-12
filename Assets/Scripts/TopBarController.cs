@@ -43,7 +43,7 @@ public class TopBarController : MonoBehaviour
 
     void WhenNoTweenRunning(TweenCallback toDo)
     {
-        if(_runningTween != null && _runningTween.IsPlaying())
+        if(_runningTween.IsActive() && _runningTween.IsPlaying())
         {
             _runningTween.Kill();
             _runningTween2?.Kill();

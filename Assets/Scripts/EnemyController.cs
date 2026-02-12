@@ -31,14 +31,17 @@ public class EnemyController : CharacterController
 		_player = TagSearchable.FindByTag<PlayerController>("Player");
 		_areaDamager = GetComponentInChildren<AreaDamager>();
 
+
 		StartCoroutine(updateNearestPlayer());
 		IEnumerator updateNearestPlayer()
 		{
 			while (true)
 			{
-				_player = TagSearchable.FindAllByTag<PlayerController>("Player").Where(p => p.IsNotNil()).MinimalOrDefault(p => p.transform.position.DistanceSqr(this.transform.position));
+				var players = GameObject.FindObjectsByType<PlayerController>(FindObjectsSortMode.None).Where(p => p.IsNotNil() && (!p.IsDead)).ToList();
+				_player = players.MinimalOrDefault(p => p.transform.position.DistanceSqr(this.transform.position));
+				Debug.Log($"{this.name}... {players.Count} players - best: {_player} (dist: {_player.transform.position.DistanceSqr(this.transform.position)})", this);
 
-				yield return new WaitForSeconds(RandomHelpers.Rand.NextFloat(0.2f, 0.5f));
+				yield return new WaitForSeconds(_rand.NextFloat(0.4f, 1.5f));
 			}
 		}
 	}
@@ -110,10 +113,11 @@ public class EnemyController : CharacterController
 	}
 
 
+
 	public override void DoDamage(float damage, UnityEngine.Object tag)
 	{
 		base.DoDamage(damage, tag);
-		if(tag is AbstractSpell || tag.GetComponentInParent<PlayerController>())
+		if (tag is AbstractSpell || tag.GetComponentInParent<PlayerController>())
 			_didNoticeThePlayer = true;
 	}
 
@@ -144,7 +148,7 @@ public class EnemyController : CharacterController
 		{
 			if (hit.collider.attachedRigidbody && (
 				hit.collider.attachedRigidbody.gameObject == this.gameObject 
-				|| hit.collider.attachedRigidbody.gameObject == _player.gameObject
+				|| hit.collider.attachedRigidbody.gameObject == _player?.gameObject
 				|| hit.collider.GetComponent<BulletController>()
 			))
 				continue;
