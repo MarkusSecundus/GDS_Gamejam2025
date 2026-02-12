@@ -8,6 +8,7 @@ TagManager:
   - TopBar
   - PlayerSpawn
   - HpBar
+  - Leaderboard
   layers:
   - Default
   - TransparentFX

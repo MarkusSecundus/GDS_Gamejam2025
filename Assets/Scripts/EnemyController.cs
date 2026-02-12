@@ -39,7 +39,7 @@ public class EnemyController : CharacterController
 			{
 				var players = GameObject.FindObjectsByType<PlayerController>(FindObjectsSortMode.None).Where(p => p.IsNotNil() && (!p.IsDead)).ToList();
 				_player = players.MinimalOrDefault(p => p.transform.position.DistanceSqr(this.transform.position));
-				Debug.Log($"{this.name}... {players.Count} players - best: {_player} (dist: {_player.transform.position.DistanceSqr(this.transform.position)})", this);
+				//Debug.Log($"{this.name}... {players.Count} players - best: '{_player}' (dist: {(_player ? _player.transform.position.DistanceSqr(this.transform.position) : (Vector3?)null)})", this);
 
 				yield return new WaitForSeconds(_rand.NextFloat(0.4f, 1.5f));
 			}
@@ -49,6 +49,7 @@ public class EnemyController : CharacterController
 	protected override void Update()
 	{
 		base.Update();
+		if (IsDead) return;
 
 		if (!_didNoticeThePlayer && (_getDirectionToPlayer().sqrMagnitude < _radiusToNoticePlayer.Sqr()))
 			_didNoticeThePlayer = true;

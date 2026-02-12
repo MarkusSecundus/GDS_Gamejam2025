@@ -53,7 +53,7 @@ namespace MarkusSecundus.Utils.Extensions
         {
             var ret = GameObject.Instantiate(self);
 
-			if (copyParent) ret.transform.parent = self.transform.parent;
+			if (copyParent) ret.transform.SetParent(self.transform.parent, false);
 			if (copyPosition) ret.transform.position = self.transform.position;
             if (copyRotation) ret.transform.rotation = self.transform.rotation;
             if (copyScale) ret.transform.localScale = (copyParent) ? self.transform.localScale : self.transform.lossyScale;

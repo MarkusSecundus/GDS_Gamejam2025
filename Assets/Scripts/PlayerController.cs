@@ -22,7 +22,7 @@ public enum WeaponType
 	Ranged, Mellee
 }
 
-public abstract class CharacterController : MonoBehaviourPun
+public abstract class CharacterController : MonoBehaviourPun, IPunObservable
 {
 	[field: SerializeField] public float HP { get; private set; } = -1f;
 	[field: SerializeField] public float MaxHP { get; private set; }
@@ -60,6 +60,7 @@ public abstract class CharacterController : MonoBehaviourPun
 	Rigidbody2D _rigidbody;
 
 
+
 	protected System.Random _rand;
 
 	protected virtual void Start()
@@ -71,6 +72,8 @@ public abstract class CharacterController : MonoBehaviourPun
 		var randomSeed = (int)this.photonView.InstantiationData[0];
 		_rand = new System.Random(randomSeed);
 		this.name = this.name + "_" + randomSeed.ToString();
+
+		transform.position += new Vector3(_rand.NextFloat(-2f, 2f), _rand.NextFloat(-2f, 2f), 0f);
 	}
 
 
@@ -172,7 +175,7 @@ public abstract class CharacterController : MonoBehaviourPun
 	{
 		if (IsDead) return;
 
-		var tagPlayer = tag.GetComponentInParent<PlayerController>();
+		var tagPlayer = tag?.GetComponentInParent<PlayerController>();
 		if (tagPlayer) _lastDamagePlayer = tagPlayer;
 
 		HP -= damage;
@@ -285,6 +288,23 @@ public abstract class CharacterController : MonoBehaviourPun
 			}).SetLink(spr.gameObject);
 		}
 	}
+
+	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+	{
+		return;
+		if (stream.IsWriting)
+		{
+			stream.SendNext(this.HP);
+		}
+		else
+		{
+			float requestedHP = (float)stream.ReceiveNext();
+			if(requestedHP >= 0 && requestedHP < HP)
+			{
+				DoDamage(HP - requestedHP, this);
+			}
+		}
+	}
 }
 
 
@@ -302,7 +322,9 @@ public class PlayerController : CharacterController
 	[SerializeField] CinemachineCamera _camera;
 	[SerializeField] SpriteRenderer[] _spritesToColor;
 
-	int CurrentScore = 0;
+	public int Score => IsDead ? 0 : _currentScore;
+
+	int _currentScore = 0;
 
 	AbstractSpell[] _allSpells;
 	int _currentSpellIdx = 0;
@@ -312,6 +334,8 @@ public class PlayerController : CharacterController
 	InputAction lookAction;
 	InputAction staffAction;
 	InputAction swordAction;
+
+	public Color MainColor { get; private set; }
 
 	protected override void Start()
 	{
@@ -323,9 +347,12 @@ public class PlayerController : CharacterController
 
 		_allSpells = _spellRoot.GetComponentsInChildren<AbstractSpell>(true);
 		_rand.Shuffle<AbstractSpell>(_allSpells);
+		bool isFirstColor = true;
 		foreach(var spr in _spritesToColor)
 		{
 			spr.color = Color.HSVToRGB(_rand.NextFloat(), _rand.NextFloat(0.5f, 1.0f), 1.0f);
+			if(Op.post_assign(ref isFirstColor, false))
+				MainColor = spr.color;
 		}
 
 		moveAction = InputSystem.actions.FindAction("Move");
@@ -334,6 +361,8 @@ public class PlayerController : CharacterController
 		swordAction = InputSystem.actions.FindAction("Sword");
 
 		_setupPlayerGUI();
+
+		TagSearchable.FindByTag<LeaderboardManager>("Leaderboard").DoUpdateLeaderboard();
 	}
 
 	public void AddScore(int scoreToAdd)
@@ -345,7 +374,9 @@ public class PlayerController : CharacterController
 	[PunRPC]
 	public void _rpcAddScore(int scoreToAdd)
 	{
-		CurrentScore += scoreToAdd;
+		_currentScore += scoreToAdd;
+
+		TagSearchable.FindByTag<LeaderboardManager>("Leaderboard").DoUpdateLeaderboard();
 	}
 
 
@@ -418,9 +449,9 @@ public class PlayerController : CharacterController
 	[SerializeField] float _respawnSeconds = 5.0f;
 	protected override void _doDestroySelf()
 	{
-		int score = this.CurrentScore;
-		this.CurrentScore = 0;
-		foreach(var spr in _effects.Sprites)
+		int score = this._currentScore;
+		this._currentScore = 0;
+		foreach (var spr in _effects.Sprites)
 		{
 			spr.color = _effects.OgColors[spr];
 		}
@@ -446,6 +477,7 @@ public class PlayerController : CharacterController
 			this.DoHealForceNoAnimation(10f);
 			this.transform.position = GameObject.FindWithTag("PlayerSpawn").transform.position;
 			this.transform.DOScale(_effects.OgLocalScale.Value, 1.0f).SetLink(gameObject);
+			TagSearchable.FindByTag<LeaderboardManager>("Leaderboard").DoUpdateLeaderboard();
 		}
 	}
 }
