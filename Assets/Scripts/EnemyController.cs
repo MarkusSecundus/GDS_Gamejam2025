@@ -55,7 +55,7 @@ public class EnemyController : CharacterController
 			_didNoticeThePlayer = true;
 
 		if (!_isStillGrowing && !_survivableScale.Contains(transform.localScale.MaxField()))
-			DoDie(_effects.HurtColor);
+			DoDamage(999f, _lastDamagePlayer ? _lastDamagePlayer : this);
 	}
 
 	Vector2 _getDirectionToPlayer() => _player ? (_player.transform.position - transform.position).xy() : Vector3.zero;

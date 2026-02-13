@@ -19,6 +19,8 @@ public class LeaderboardManager : MonoBehaviour
 
 	public void DoUpdateLeaderboard()
 	{
+	}
+	void Update(){
 		foreach (var entry in _entries) { Destroy(entry.gameObject); }
 		_entries.Clear();
 

@@ -173,12 +173,25 @@ public abstract class CharacterController : MonoBehaviourPun, IPunObservable
 
 	public virtual void DoDamage(float damage, Object tag)
 	{
+		if (!IsDead)
+		{
+			var tagPlayer = tag?.GetComponentInParent<PlayerController>();
+			if (tagPlayer) _lastDamagePlayer = tagPlayer;
+			else if (_mustBeFinishedOffByPlayerToAwardScore()) _lastDamagePlayer = null;
+		}
+
+		if(PhotonNetwork.IsMasterClient)
+			photonView.RPC(nameof(_rpcDoDamage), RpcTarget.All, HP - damage);
+	}
+
+	protected virtual bool _mustBeFinishedOffByPlayerToAwardScore() => false;
+
+	[PunRPC]
+	public void _rpcDoDamage(float newHP)
+	{
 		if (IsDead) return;
 
-		var tagPlayer = tag?.GetComponentInParent<PlayerController>();
-		if (tagPlayer) _lastDamagePlayer = tagPlayer;
-
-		HP -= damage;
+		HP = newHP;
 		_effects.OnHPChange.Invoke($"{HP}");
 		if (IsDead)
 			DoDie(_effects.HurtColor);
@@ -188,15 +201,20 @@ public abstract class CharacterController : MonoBehaviourPun, IPunObservable
 
 	public void DoHeal(float hp)
 	{
+		if(PhotonNetwork.IsMasterClient)
+			photonView.RPC(nameof(_rpcDoHeal), RpcTarget.All, Mathf.Min(HP + hp, MaxHP));
+	}
+	[PunRPC]
+	public void _rpcDoHeal(float newHP)
+	{
 		if (IsDead) return;
-		DoHealForceNoAnimation(hp);
+		DoHealForceNoAnimation(newHP);
 		_hurtAnimation(_effects.HealColor, _effects.HealBlinkBuildup, _effects.HealBlinkSustain, _effects.HealBlinkEnd, _sounds.HealSound);
-
 	}
 
-	public void DoHealForceNoAnimation(float hp)
+	protected void DoHealForceNoAnimation(float newHP)
 	{
-		HP = Mathf.Min(HP + hp, MaxHP);
+		HP = newHP;
 		_effects.OnHPChange.Invoke($"{HP}");
 
 	}
@@ -367,18 +385,20 @@ public class PlayerController : CharacterController
 
 	public void AddScore(int scoreToAdd)
 	{
-		_rpcAddScore(scoreToAdd);
-		//photonView.RPC(nameof(_rpcAddScore), RpcTarget.All, new object[] { scoreToAdd });
+		if(PhotonNetwork.IsMasterClient)
+			photonView.RPC(nameof(_rpcSetScore), RpcTarget.All, new object[] { _currentScore + scoreToAdd });
 	}
 
+
 	[PunRPC]
-	public void _rpcAddScore(int scoreToAdd)
+	public void _rpcSetScore(int scoreToAdd)
 	{
-		_currentScore += scoreToAdd;
+		_currentScore = scoreToAdd;
 
 		TagSearchable.FindByTag<LeaderboardManager>("Leaderboard").DoUpdateLeaderboard();
 	}
 
+	protected override bool _mustBeFinishedOffByPlayerToAwardScore() => true;
 
 	void _setupPlayerGUI()
 	{
