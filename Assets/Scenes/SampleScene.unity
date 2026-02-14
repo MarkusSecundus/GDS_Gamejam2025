@@ -1306,6 +1306,7 @@ MonoBehaviour:
   randomizeRange: {x: 0, y: 0, z: 0}
   MaxSpawnedObjectsCount: 6
   countCheckInterval_seconds: 1
+  IsPerpetual: 1
 --- !u!1001 &481910978
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1539,6 +1540,7 @@ MonoBehaviour:
   randomizeRange: {x: 0, y: 0, z: 0}
   MaxSpawnedObjectsCount: 6
   countCheckInterval_seconds: 1
+  IsPerpetual: 1
 --- !u!1001 &499285059
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2182,6 +2184,57 @@ Transform:
   - {fileID: 1528106574}
   m_Father: {fileID: 140415977}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 129.882}
+--- !u!1 &575349135
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 575349136}
+  - component: {fileID: 575349137}
+  m_Layer: 0
+  m_Name: TestMelleeSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &575349136
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 575349135}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 9.94, y: 6.14, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1649844937}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &575349137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 575349135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d6fb03c3af27b147b621f91836e9724, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  spawns:
+  - Enemy: {fileID: 7722252051730912548, guid: d0d0d0dd8a1db4b43adee7b49ed5dcdf, type: 3}
+    Delay_seconds: 1
+  randomizeRange: {x: 0, y: 0, z: 0}
+  MaxSpawnedObjectsCount: 6
+  countCheckInterval_seconds: 1
+  IsPerpetual: 0
 --- !u!1001 &606623103
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3258,6 +3311,7 @@ MonoBehaviour:
   randomizeRange: {x: 0, y: 0, z: 0}
   MaxSpawnedObjectsCount: 6
   countCheckInterval_seconds: 1
+  IsPerpetual: 1
 --- !u!1001 &909321524
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3361,6 +3415,57 @@ Transform:
   - {fileID: 606623104}
   m_Father: {fileID: 140415977}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &918580724
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 918580725}
+  - component: {fileID: 918580726}
+  m_Layer: 0
+  m_Name: TestMelleeSpawn (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &918580725
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918580724}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 11.99, y: 6.53, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1649844937}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &918580726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918580724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d6fb03c3af27b147b621f91836e9724, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  spawns:
+  - Enemy: {fileID: 7722252051730912548, guid: d0d0d0dd8a1db4b43adee7b49ed5dcdf, type: 3}
+    Delay_seconds: 1
+  randomizeRange: {x: 0, y: 0, z: 0}
+  MaxSpawnedObjectsCount: 6
+  countCheckInterval_seconds: 1
+  IsPerpetual: 0
 --- !u!1 &935079286
 GameObject:
   m_ObjectHideFlags: 0
@@ -3554,6 +3659,7 @@ MonoBehaviour:
   randomizeRange: {x: 0, y: 0, z: 0}
   MaxSpawnedObjectsCount: 6
   countCheckInterval_seconds: 1
+  IsPerpetual: 1
 --- !u!1 &950955275
 GameObject:
   m_ObjectHideFlags: 0
@@ -5047,6 +5153,7 @@ MonoBehaviour:
   randomizeRange: {x: 0, y: 0, z: 0}
   MaxSpawnedObjectsCount: 6
   countCheckInterval_seconds: 1
+  IsPerpetual: 1
 --- !u!1 &1365150938
 GameObject:
   m_ObjectHideFlags: 0
@@ -5342,6 +5449,7 @@ MonoBehaviour:
   randomizeRange: {x: 0, y: 0, z: 0}
   MaxSpawnedObjectsCount: 6
   countCheckInterval_seconds: 1
+  IsPerpetual: 1
 --- !u!1001 &1389665591
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5590,6 +5698,7 @@ MonoBehaviour:
   randomizeRange: {x: 0, y: 0, z: 0}
   MaxSpawnedObjectsCount: 6
   countCheckInterval_seconds: 1
+  IsPerpetual: 1
 --- !u!1001 &1442762754
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6389,6 +6498,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2021828683}
+  - {fileID: 575349136}
+  - {fileID: 918580725}
   - {fileID: 968462004}
   - {fileID: 140415977}
   m_Father: {fileID: 0}
@@ -6635,6 +6746,7 @@ MonoBehaviour:
   randomizeRange: {x: 0, y: 0, z: 0}
   MaxSpawnedObjectsCount: 6
   countCheckInterval_seconds: 1
+  IsPerpetual: 1
 --- !u!1001 &1674367750
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7117,6 +7229,7 @@ MonoBehaviour:
   randomizeRange: {x: 0, y: 0, z: 0}
   MaxSpawnedObjectsCount: 6
   countCheckInterval_seconds: 1
+  IsPerpetual: 1
 --- !u!1001 &1791132282
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7714,6 +7827,7 @@ MonoBehaviour:
   randomizeRange: {x: 0, y: 0, z: 0}
   MaxSpawnedObjectsCount: 6
   countCheckInterval_seconds: 1
+  IsPerpetual: 1
 --- !u!1 &1923969680
 GameObject:
   m_ObjectHideFlags: 0

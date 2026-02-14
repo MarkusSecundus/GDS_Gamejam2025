@@ -15,6 +15,9 @@ public abstract class AbstractProjectileController : MonoBehaviour
     [SerializeField] protected bool _canHitOtherBullets = true;
     [SerializeField] protected bool _isPassthrough = false;
 
+    public bool ShouldOverrideShootForce => ShootingForceOverride >= 0f;
+    [SerializeField] public float ShootingForceOverride = -1f;
+
     [field: SerializeField] public AudioClip CastSound { get; private set; }
 
     void Start()
@@ -76,7 +79,7 @@ public abstract class AbstractProjectileController : MonoBehaviour
             _effects.Particles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         
         if(_effects.BulletSprite)
-            _effects.BulletSprite.DOColor(new Color(0, 0, 0, 0), _effects.DeathFadeDuration).OnComplete(()=>Destroy(gameObject));
+            _effects.BulletSprite.DOColor(new Color(0, 0, 0, 0), _effects.DeathFadeDuration).OnComplete(()=>Destroy(gameObject)).SetLink(_effects.BulletSprite.gameObject);
         else
             this.InvokeWithDelay(()=>Destroy(gameObject), _effects.DeathFadeDuration);
     }

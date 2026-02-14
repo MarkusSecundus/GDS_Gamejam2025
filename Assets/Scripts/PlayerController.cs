@@ -22,7 +22,7 @@ public enum WeaponType
 	Ranged, Mellee
 }
 
-public abstract class CharacterController : MonoBehaviourPun, IPunObservable
+public abstract class CharacterController : MonoBehaviourPun
 {
 	[field: SerializeField] public float HP { get; private set; } = -1f;
 	[field: SerializeField] public float MaxHP { get; private set; }
@@ -117,8 +117,9 @@ public abstract class CharacterController : MonoBehaviourPun, IPunObservable
 	{
 		var newProjectile = _getProjectile().gameObject.InstantiateWithTransform(true, true, true, false).GetComponent<Rigidbody2D>();
 		var shootDirection = (newProjectile.position - transform.position.xy()).normalized;
-		newProjectile.AddForce(shootDirection * _shootForce, ForceMode2D.Impulse);
 		var projectile = newProjectile.GetComponent<AbstractProjectileController>();
+		float shootForce = projectile && projectile.ShouldOverrideShootForce ? projectile.ShootingForceOverride : _shootForce;
+		newProjectile.AddForce(shootDirection * shootForce, ForceMode2D.Impulse);
 		if (_spellNameDisplay && projectile is AbstractSpell spell)
 		{
 			_spellNameDisplay.ShowText(spell.SpellName);
@@ -171,28 +172,35 @@ public abstract class CharacterController : MonoBehaviourPun, IPunObservable
 
 	protected PlayerController _lastDamagePlayer = null;
 
+	const float KnockbackForce = 2f;
+
 	public virtual void DoDamage(float damage, Object tag)
 	{
+		Vector3 knockback = Vector3.zero;
 		if (!IsDead)
 		{
-			var tagPlayer = tag?.GetComponentInParent<PlayerController>();
+			var character = tag?.GetComponentInParent<CharacterController>();
+			var tagPlayer = character as PlayerController;
 			if (tagPlayer) _lastDamagePlayer = tagPlayer;
 			else if (_mustBeFinishedOffByPlayerToAwardScore()) _lastDamagePlayer = null;
+			if (character)
+				knockback = (transform.position - character.transform.position).normalized * KnockbackForce;
 		}
 
 		if(PhotonNetwork.IsMasterClient)
-			photonView.RPC(nameof(_rpcDoDamage), RpcTarget.All, HP - damage);
+			photonView.RPC(nameof(_rpcDoDamage), RpcTarget.All, HP - damage, knockback);
 	}
 
 	protected virtual bool _mustBeFinishedOffByPlayerToAwardScore() => false;
 
 	[PunRPC]
-	public void _rpcDoDamage(float newHP)
+	public void _rpcDoDamage(float newHP, Vector3 knockback)
 	{
 		if (IsDead) return;
 
 		HP = newHP;
 		_effects.OnHPChange.Invoke($"{HP}");
+		_rigidbody.AddForce(knockback, ForceMode2D.Impulse);
 		if (IsDead)
 			DoDie(_effects.HurtColor);
 		else
@@ -304,23 +312,6 @@ public abstract class CharacterController : MonoBehaviourPun, IPunObservable
 					}
 				).SetLink(spr.gameObject);
 			}).SetLink(spr.gameObject);
-		}
-	}
-
-	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-	{
-		return;
-		if (stream.IsWriting)
-		{
-			stream.SendNext(this.HP);
-		}
-		else
-		{
-			float requestedHP = (float)stream.ReceiveNext();
-			if(requestedHP >= 0 && requestedHP < HP)
-			{
-				DoDamage(HP - requestedHP, this);
-			}
 		}
 	}
 }

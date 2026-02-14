@@ -9805,6 +9805,7 @@ MonoBehaviour:
   _maxDistanceTraveled: 30
   _canHitOtherBullets: 0
   _isPassthrough: 0
+  ShootingForceOverride: -1
   <CastSound>k__BackingField: {fileID: 8300000, guid: 29b671cba4b62184f831f02fbeff60e9, type: 3}
   _effects:
     BulletSprite: {fileID: 0}
@@ -29888,6 +29889,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 2444987771480756822}
   - {fileID: 3607846573920590493}
   - {fileID: 9198766584704895411}
   sceneViewId: 0
@@ -34870,6 +34872,7 @@ MonoBehaviour:
   _maxDistanceTraveled: 30
   _canHitOtherBullets: 0
   _isPassthrough: 0
+  ShootingForceOverride: -1
   <CastSound>k__BackingField: {fileID: 8300000, guid: 59d998d9d6638934781fac0c8770e457, type: 3}
   _effects:
     BulletSprite: {fileID: 0}
@@ -35112,6 +35115,7 @@ MonoBehaviour:
   _maxDistanceTraveled: 30
   _canHitOtherBullets: 0
   _isPassthrough: 1
+  ShootingForceOverride: -1
   <CastSound>k__BackingField: {fileID: 8300000, guid: 6bc2c6036787ebc459c725ed87aec738, type: 3}
   _effects:
     BulletSprite: {fileID: 0}
@@ -35248,14 +35252,45 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2206486074757810018}
   - {fileID: 3073773717360742226}
   - {fileID: 3278668987831075069}
   - {fileID: 8483827791458970525}
   - {fileID: 4491573319387825951}
   - {fileID: 6249297919322640215}
-  - {fileID: 2206486074757810018}
   - {fileID: 8733739033596480682}
   - {fileID: 7840288419161271560}
+  m_Father: {fileID: 9194531817421884384}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7610758554843739911
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5871873878495785890}
+  m_Layer: 0
+  m_Name: UnusedSpells
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5871873878495785890
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7610758554843739911}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.4900002, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
   m_Father: {fileID: 9194531817421884384}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7997750609463039240
@@ -35270,6 +35305,7 @@ GameObject:
   - component: {fileID: 6250755744550336497}
   - component: {fileID: 4821409189524045471}
   - component: {fileID: 5033625897684252512}
+  - component: {fileID: 4254910324701899869}
   m_Layer: 0
   m_Name: HealingSpell
   m_TagString: Untagged
@@ -35301,7 +35337,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7997750609463039240}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -35370,9 +35406,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _toIgnore: {fileID: 0}
-  _maxDistanceTraveled: 30
+  _maxDistanceTraveled: 8
   _canHitOtherBullets: 0
   _isPassthrough: 1
+  ShootingForceOverride: -1
   <CastSound>k__BackingField: {fileID: 8300000, guid: 41d9dab1fddd7954aa87cebe306aa1b3, type: 3}
   _effects:
     BulletSprite: {fileID: 0}
@@ -35383,6 +35420,20 @@ MonoBehaviour:
   <Type>k__BackingField: 2
   _victimParticles: {fileID: 0}
   HealAmount: 3
+--- !u!114 &4254910324701899869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7997750609463039240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f8af8690d635ea4389c94dfaab71cf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MoveInSpiral
+  AnglePerSecond_degree: 4
+  DistancePerSecond: 2
 --- !u!1 &8069205562420693807
 GameObject:
   m_ObjectHideFlags: 0
@@ -35498,6 +35549,7 @@ MonoBehaviour:
   _maxDistanceTraveled: 30
   _canHitOtherBullets: 0
   _isPassthrough: 0
+  ShootingForceOverride: -1
   <CastSound>k__BackingField: {fileID: 8300000, guid: c24570077c286ec42a2cfce7661a37f0, type: 3}
   _effects:
     BulletSprite: {fileID: 0}
@@ -40471,6 +40523,7 @@ MonoBehaviour:
   _maxDistanceTraveled: 30
   _canHitOtherBullets: 0
   _isPassthrough: 0
+  ShootingForceOverride: -1
   <CastSound>k__BackingField: {fileID: 0}
   _effects:
     BulletSprite: {fileID: 0}
@@ -45545,6 +45598,7 @@ MonoBehaviour:
   _maxDistanceTraveled: 30
   _canHitOtherBullets: 0
   _isPassthrough: 1
+  ShootingForceOverride: -1
   <CastSound>k__BackingField: {fileID: 8300000, guid: 3a011d8199fc66d47a7c437e7baf6a03, type: 3}
   _effects:
     BulletSprite: {fileID: 0}
@@ -45591,6 +45645,7 @@ Transform:
   m_Children:
   - {fileID: 4785292796167565207}
   - {fileID: 1585167405063598361}
+  - {fileID: 5871873878495785890}
   - {fileID: 1625181465261827200}
   - {fileID: 7151930887355951489}
   - {fileID: 4565723796483860944}

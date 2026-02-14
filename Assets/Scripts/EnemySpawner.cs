@@ -20,6 +20,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] Vector3 randomizeRange = Vector3.zero;
     [SerializeField] int MaxSpawnedObjectsCount = 6;
 	[SerializeField] float countCheckInterval_seconds = 1.0f;
+    [SerializeField] bool IsPerpetual = true;
 
 	int idx = 0;
 
@@ -41,9 +42,7 @@ public class EnemySpawner : MonoBehaviour
 
         while (true)
         {
-
             var current = spawns[idx];
-			idx = (idx + 1) % spawns.Length;
 			yield return new WaitForSeconds(current.Delay_seconds);
 
 			while (_getCurrentlyAliveCount() >= MaxSpawnedObjectsCount)
@@ -55,7 +54,14 @@ public class EnemySpawner : MonoBehaviour
 
 			var newEnemy = PhotonNetwork.Instantiate(current.Enemy.name, spawnPosition, transform.rotation, 0, new object[] {RandomHelpers.Rand.Next()});
             currentlyAlive.Add(newEnemy);
-        }
+
+			++idx;
+			if (idx >= spawns.Length)
+			{
+				if (IsPerpetual) idx = idx.Mod(spawns.Length);
+				else yield break;
+			}
+		}
     }
 
 }
